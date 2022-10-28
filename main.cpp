@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <windows.h>
 #include <math.h>
+#include "BmpLoader.h"
 
 #define PI 3.1416
 
@@ -23,6 +24,7 @@ GLboolean bRotate = false, uRotate = false;
 GLfloat theta_pakha =0;
 //
 double wall_length = 20.0,wall_width = 0.5, wall_height = 10.0;
+double Loop, LoopAll = 0;
 GLfloat eyeX =wall_length/2;// 2;
 GLfloat eyeY =wall_height/2;// 3;
 GLfloat eyeZ = 1.5 * wall_length;
@@ -36,6 +38,8 @@ GLfloat lookZ = wall_length/2;
 bool ambient0 = true, diffuse0 = true, specular0 = true;
 bool ambient1 = true, diffuse1 = true, specular1 = true;
 
+float length = 1.0;
+
 float redish[] = {0.5020, 0.0000, 0.0000};
 float deep_ash[] = {0.4392, 0.5020, 0.5647};
 float blue[] = {0.0,0.0,1.0};
@@ -46,9 +50,12 @@ float red[] = {1.0,0.0000, 0.0000};
 float brown[] = {0.5451, 0.2706, 0.0745};
 float black[] = {0.0, 0.0, 0.0};
 
+vector<int> v;
+unsigned int ID;
+
 //GLfloat alpha = 0.0, theta = 0.0, beta= 0.0, axis_x=0.0, axis_y=0.0, axis_z = 0.0, eyeX = 2.0, eyeY = 3.0, eyeZ = 10.0, roll = 0.0, pitch = 0.0, yaw = 0.0;
 
-static GLfloat v_quad_strip[8][3] =
+/*static GLfloat v_quad_strip[8][3] =
 {
     {0.0, 0.0, 0.0},
     {0.0, 0.0, 1.0},
@@ -63,7 +70,7 @@ static GLfloat v_quad_strip[8][3] =
     {0.0, 0.0, 2.0},
     {2.0, 0.0, 2.0},
     {2.0, 0.0, 0.0},
-    {1.0, 4.0, 1.0}*/
+    {1.0, 4.0, 1.0}*//*
 };
 
 static GLubyte qs_Indices[2][8] =
@@ -80,28 +87,65 @@ static GLubyte qs_Indices[2][8] =
     {4, 1, 2},
     {4, 2, 3},
     {4, 3, 0},
-    {4, 0, 1}*/
+    {4, 0, 1}*//*
 
     {1,5,2,6,3,7,0,4},
     {6,7,5,4,1,0,2,3}
 
-};
-
-/*static GLubyte quadIndices[1][4] =
-{
-    {0, 3, 2, 1}
-};
-
-static GLfloat colors[6][3] =
-{
-    {0.0, 0.0, 1.0},
-    {0.5, 0.0, 1.0},
-    {0.0, 1.0, 0.0},
-    {0.0, 1.0, 1.0},
-    {0.8, 1.0, 1.0},
-    {0.8, 0.0, 0.0}
 };*/
 
+
+    static GLfloat v_cube[8][3] =
+{
+    {0.0, 0.0, 0.0}, //0
+    {0.0, 0.0, length}, //1
+    {length, 0.0, 1.0}, //2
+    {length, 0.0, 0.0}, //3
+    {0.0, length, 0.0}, //4
+    {0.0, length, length}, //5
+    {length, length, length}, //6
+    {length, length, 0.0}  //7
+};
+
+    static GLubyte quadIndices[6][4] =
+    {
+        {0, 1, 2, 3}, //bottom
+        {4, 5, 6, 7}, //top
+        {5, 1, 2, 6}, //front
+        {0, 4, 7, 3}, // back is clockwise
+        {2, 3, 7, 6}, //right
+        {1, 5, 4, 0}  //left is clockwise
+    };
+
+
+
+void LoadTexture(const char*filename)
+{
+    /*glBindTexture(GL_TEXTURE_2D, TextureColorbufferName);
+     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1000);
+ glBindTexture(GL_TEXTURE_2D, 0);*/
+
+
+
+    glGenTextures(1, &ID);
+    glBindTexture(GL_TEXTURE_2D, ID);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, ID);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    BmpLoader bl(filename);
+    gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, bl.iWidth, bl.iHeight, GL_RGB, GL_UNSIGNED_BYTE, bl.textureData );
+}
+void texture_image()
+{
+    LoadTexture("C:\\Users\\USER\\Desktop\\inside_room\\star_moon.bmp"); //0
+    v.push_back(ID);
+    LoadTexture("C:\\Users\\USER\\Desktop\\inside_room\\star_moon1.bmp"); //0
+    v.push_back(ID);
+
+}
 
 
 void light0()
@@ -203,6 +247,25 @@ void light1()
     glLightf( GL_LIGHT1, GL_SPOT_CUTOFF, 10.0);*/
 }
 
+static void getNormal3p
+(GLfloat x1, GLfloat y1,GLfloat z1, GLfloat x2, GLfloat y2,GLfloat z2, GLfloat x3, GLfloat y3,GLfloat z3)
+{
+    GLfloat Ux, Uy, Uz, Vx, Vy, Vz, Nx, Ny, Nz;
+
+    Ux = x2-x1;
+    Uy = y2-y1;
+    Uz = z2-z1;
+
+    Vx = x3-x1;
+    Vy = y3-y1;
+    Vz = z3-z1;
+
+    Nx = Uy*Vz - Uz*Vy;
+    Ny = Uz*Vx - Ux*Vz;
+    Nz = Ux*Vy - Uy*Vx;
+
+    glNormal3f(Nx,Ny,Nz);
+}
 
 void drawcube(float am_r, float am_g, float am_b, float df_r,float df_g,float df_b,float sp_r=1.0,float sp_g=1.0,float sp_b=1.0,float shininess = 60)
 {
@@ -225,22 +288,21 @@ void drawcube(float am_r, float am_g, float am_b, float df_r,float df_g,float df
     glMaterialfv( GL_FRONT, GL_SPECULAR, mat_specular);
     glMaterialfv( GL_FRONT, GL_SHININESS, mat_shininess);
 
-
-    glBegin(GL_QUAD_STRIP);
-    for (GLint i = 0; i <2; i++)
+    glBegin(GL_QUADS);
+    for (GLint i = 0; i <6; i++)
     {
-//        glColor3f(colors[i][0],colors[i][1],colors[i][2]);
-//        glColor3f(r,g,b);
+        getNormal3p(v_cube[quadIndices[i][0]][0], v_cube[quadIndices[i][0]][1], v_cube[quadIndices[i][0]][2],
+                    v_cube[quadIndices[i][1]][0], v_cube[quadIndices[i][1]][1], v_cube[quadIndices[i][1]][2],
+                    v_cube[quadIndices[i][2]][0], v_cube[quadIndices[i][2]][1], v_cube[quadIndices[i][2]][2]);
+//        glVertex3fv(&v_cube[quadIndices[i][0]][0]);
+//        glVertex3fv(&v_cube[quadIndices[i][1]][0]);
+//        glVertex3fv(&v_cube[quadIndices[i][2]][0]);
+//        glVertex3fv(&v_cube[quadIndices[i][3]][0]);
 
-
-        glVertex3fv(&v_quad_strip[qs_Indices[i][0]][0]);
-        glVertex3fv(&v_quad_strip[qs_Indices[i][1]][0]);
-        glVertex3fv(&v_quad_strip[qs_Indices[i][2]][0]);
-        glVertex3fv(&v_quad_strip[qs_Indices[i][3]][0]);
-        glVertex3fv(&v_quad_strip[qs_Indices[i][4]][0]);
-        glVertex3fv(&v_quad_strip[qs_Indices[i][5]][0]);
-        glVertex3fv(&v_quad_strip[qs_Indices[i][6]][0]);
-        glVertex3fv(&v_quad_strip[qs_Indices[i][7]][0]);
+        glVertex3fv(&v_cube[quadIndices[i][0]][0]);glTexCoord2f(0,1);
+        glVertex3fv(&v_cube[quadIndices[i][1]][0]);glTexCoord2f(0,0);
+        glVertex3fv(&v_cube[quadIndices[i][2]][0]);glTexCoord2f(1,0);
+        glVertex3fv(&v_cube[quadIndices[i][3]][0]);glTexCoord2f(1,1);
     }
     glEnd();
 
@@ -637,7 +699,161 @@ void drawChair()
 
 }
 
-void shrubberi(double pos_x=6.0,double pos_y=0.0,double pos_z =0.0)
+
+void cylinder(float alas, float atas, float tinggi)
+{
+	float i;
+	glPushMatrix();
+	glTranslatef(1.0, 0.0, -alas / 8);
+	glutSolidCone(alas, 0, 32, 4);
+	for (i = 0; i <= tinggi; i += alas / 24)
+	{
+		glTranslatef(0.0, 0.0, alas / 24);
+		glutSolidTorus(alas / 4, alas - ((i * (alas - atas)) / tinggi), 16, 16);
+	}
+	glTranslatef(0.0, 0.0, alas / 4);
+	glutSolidCone(atas, 0, 20, 1);
+	glColor3f(1., 0., 0.);
+	glPopMatrix();
+}
+
+
+void blok(float tebal, int ratiol, int ratiop)
+{
+	float i, j;
+	glPushMatrix();
+	for (i = 0; i < ratiop; i++)
+	{
+		glTranslatef(-(ratiol + 1) * tebal / 2, 0.0, 0.0);
+		for (j = 0; j < ratiol; j++)
+		{
+			glTranslatef(tebal, 0.0, 0.0);
+			glutSolidCube(tebal);
+		}
+		glTranslatef(-(ratiol - 1) * tebal / 2, 0.0, tebal);
+	}
+	glPopMatrix();
+}
+
+
+float moving = 0.0f;
+
+void car()
+{
+    glPushMatrix();
+//        glTranslatef(0, 0, -150);
+        glTranslatef(moving, 0, 15);
+        moving += 0.3f;
+        if(moving>199){
+            moving=0.0f;
+        }
+        Loop++;
+//        glRotatef(Loop, 0.9, 4.0, 0.6);
+        glPushMatrix();
+            glColor3f(0.1, 0.1,1.0);
+            blok(1, 0.3, 0.2);
+
+            glColor3f(1, 0.1,1.0);
+            glTranslatef(0, 9, 0);
+            blok(1, 0.3, 0.2);
+
+            glColor3f(0, 1,1.0);
+            glTranslatef(10, -10, 0);
+            blok(1, 0.55, 0.2);
+
+            glRotatef(-35, 0, 0, 15);
+            glTranslatef(0, 7, 0);
+            glColor3f(1,0,.5);
+            blok(1, 0.2, 0.2);
+
+            glTranslatef(2, 4.9, -2.5);
+            glColor3f(1.0, 1.0, 1.0);// warna kaca
+            blok(0.05, 2, 3.1);
+
+            glRotatef(180, 45, -45, 0);
+            /*glTranslatef(0, 10,0);
+            blok(3, 2, 5);
+            cylinder(2,2,30);
+            glTranslatef(-10, -10,0);
+            glRotatef(90, 45,-45, 0);
+            cylinder(2,2,30);
+            glRotatef(90, -45, 90, 90);
+            blok(5, 3, 2);*/
+
+        glPopMatrix();
+
+        glPushMatrix();
+            // tire
+            // 1
+            glColor3f(0.4, 0.4, 0.4);
+            glTranslatef(20, -8, -7);
+            cylinder(5, 5, 3);
+            // 2
+            glColor3f(0.4, 0.4, 0.4);
+            glTranslatef(-20, 8, 7);
+            glTranslatef(-5, -8, -7);
+            cylinder(5, 5, 3);
+            // 3
+            glColor3f(0.4, 0.4, 0.4);
+            glTranslatef(5, 8, 7);
+            glRotatef(180, 0, 180, 0);
+            glTranslatef(3, -8, -17);
+            cylinder(5, 5, 3);
+            // 4
+            glColor3f(0.4, 0.4, 0.4);
+            glTranslatef(-3, 8, 17);
+            glTranslatef(-22, -8, -17);
+            cylinder(5, 5, 3);
+
+            // window
+            glColor3f(1.0, 1.0, 1.0);
+            glRotatef(90, 1, 0, 0);
+            glTranslatef(8, 2.5, -15);
+            blok(0.2, 0.4, 0.5);
+            //
+            glRotatef(90, 0, 1, 0);
+            glTranslatef(0, -0.2, 7);
+            blok(0.2, 0.4, 0.8);
+            //
+            glRotatef(0, 0, 0, 0);
+            glTranslatef(0, 19.2, 0);
+            blok(0.2, 0.4, 0.8);
+            //
+            glRotatef(90, 0, 1, 0);
+            glTranslatef(7, 0, -8);
+            blok(0.2, 0.4, 0.5);
+
+            // light front
+            glColor3f(9.9, 9.9, 0.0);
+            glRotatef(90, 0, 1, 0);
+            glTranslatef(0, -3, 20);
+            cylinder(2, 2, 3);
+
+            glColor3f(9.9, 9.9, 0.0);
+            glRotatef(0, 0, 0, 0);
+            glTranslatef(0, -12, 0);
+            cylinder(2, 2, 3);
+
+            // light back
+            glColor3f(1, 0.0, 0.0);
+            glRotatef(0, 0, 0, 0);
+            glTranslatef(0, 0, -52);
+            cylinder(1, 1, 3);
+
+            glColor3f(1.0, 1.0, 1.0);
+            glRotatef(90, 1, 0, 0);
+            glTranslatef(-8, 3.5, -12);
+            blok(0.2, 0.4, 0.8);
+
+            glColor3f(9.0, 0.0, 0.0);
+            glRotatef(0, 0, 0, 0);
+            glTranslatef(-8, 28, 0);
+            cylinder(1, 1, 12);
+        glPopMatrix();
+    glPopMatrix();
+}
+
+void jhop(double pos_x=6.0,double pos_y=0.0,double pos_z =0.0)
 {
         glPushMatrix();
     glTranslatef(pos_x,pos_y+4,pos_z+0);
@@ -718,8 +934,8 @@ void Tree(double pos_x=0.4,double pos_y=0.3,double pos_z =10)
 
 void piler()
 {
-    for(int i=-100; i<100; i++)
-    for(double j = 0;j<5; j++){
+    for(int i=-10; i<10; i ++)
+    for(double j = 0;j<5; j=j+1.8){
     {
 
 
@@ -731,7 +947,7 @@ void piler()
         glTranslatef(3.7*i,0,10+j);
         glScaled(1,1,1);
         Tree(0.4,0.3,10);
-        shrubberi();
+        jhop();
         glPopMatrix();
 
         GLfloat mat_ambient[] = { 1, 1, 1, 1.0 };
@@ -765,8 +981,8 @@ void piler()
         glPopMatrix();
     }
     }
-    for(int i=-100; i<100; i++)
-        for(double j = 0;j<5; j++){
+    for(int i=-10; i<10; i++)
+        for(double j = 0;j<5; j=j+2){
     {
 
         glPushMatrix();
@@ -778,7 +994,7 @@ void piler()
         glTranslatef(2.8*i,0,5-j);
         //glScaled(1,1,1);
         Tree(0.4,0.3,10);
-        shrubberi();
+        jhop();
         glPopMatrix();
         //glPopMatrix();
 
@@ -834,39 +1050,6 @@ void drawRoom()
 
     drawcube(brown[0],brown[1],brown[2],1,1,1);
     glPopMatrix();
-
-    //left wall
-//    glPushMatrix();
-//    glTranslatef(0,0,0);
-//    glScalef(0,20,20);
-//
-//    drawcube(blue[0],blue[1],blue[2],1,1,1);
-//    glPopMatrix();
-
-    //front wall
-//    glPushMatrix();
-//    glTranslatef(0,0,0);
-//    glScalef(20,20,0);
-////     float color[] = {128.0,0.0,0.0};
-//
-//    drawcube(blue[0],blue[1],blue[2],1,1,1);
-//    glPopMatrix();
-
-    //right wall
-//    glPushMatrix();
-//    glTranslatef(200,0,5);
-//    glScalef(0,2,-30);
-//
-//    drawcube(blue[0],blue[1],blue[2],1,1,1);
-//    glPopMatrix();
-
-    //roof
-//    glPushMatrix();
-//    glTranslatef(0,10,5);
-//    glScalef(40.5,0,-30);
-//
-//    drawcube(deep_ash[0],deep_ash[1],deep_ash[2],1,1,1);
-//    glPopMatrix();
 
 }
 
@@ -969,23 +1152,6 @@ void drawBed()
 
 }
 
-//
-//void sphere(GLdouble rad, GLint slices, GLint stacks)
-//{
-//    GLfloat no_mat[] = { 0.0, 0.0, 0.0, 1.0 };
-//    GLfloat mat_ambient[] = { 0.5, 0, 0.5, 1.0 };
-//    GLfloat mat_diffuse[] = { 1.0, 0, 1.0, 1.0 };
-//    GLfloat mat_specular[] = { 1, 1,1, 1.0 };
-//    GLfloat mat_shininess[] = {60};
-//    GLfloat mat_emission[] = {1.0, 0, 0.5, 1.0};
-////front phase niye kaaj hoche
-//    glMaterialfv( GL_FRONT, GL_AMBIENT, mat_ambient);
-//    glMaterialfv( GL_FRONT, GL_DIFFUSE, mat_diffuse);
-//    glMaterialfv( GL_FRONT, GL_SPECULAR, mat_specular);
-//    glMaterialfv( GL_FRONT, GL_SHININESS, mat_shininess);
-//
-//    glutSolidSphere(rad, slices, stacks);
-//}
 
 void drawSphere(float am_r, float am_g, float am_b, float df_r, float df_g, float df_b )
 {
@@ -1040,6 +1206,7 @@ void display(void)
     drawRoom();
     drawRoad();
     piler();
+    //car();
 
 //    glPushMatrix();
 //    glTranslatef(100,3.5,-10);
@@ -1225,7 +1392,7 @@ int main (int argc, char **argv)
 
     glutInitWindowPosition(100,100);
     glutInitWindowSize(windowHeight, windowWidth);
-    glutCreateWindow("Inside Room");
+    glutCreateWindow("Kill The Man");
 
     glShadeModel( GL_SMOOTH );
     glEnable( GL_DEPTH_TEST );
