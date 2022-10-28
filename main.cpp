@@ -35,6 +35,16 @@ GLfloat lookX = wall_length / 2;
 GLfloat lookY = wall_height/2;
 GLfloat lookZ = wall_length/2;
 
+GLfloat x_look = lookX;
+GLfloat y_look = lookY;
+GLfloat z_look = lookZ;
+bool l_on1 = true;
+bool l_on2 = true;
+bool l_on3 = true;
+bool ambflag=true;
+bool difflag=true;
+bool specflag=true;
+
 bool ambient0 = true, diffuse0 = true, specular0 = true;
 bool ambient1 = true, diffuse1 = true, specular1 = true;
 
@@ -148,6 +158,24 @@ void texture_image()
     v.push_back(ID);
 
     LoadTexture("F:\\4.2\\kill_the_man_game_OpenGL\\road.bmp");
+    v.push_back(ID);
+
+    LoadTexture("F:\\4.2\\kill_the_man_game_OpenGL\\backglas.bmp");
+    v.push_back(ID);
+
+    LoadTexture("F:\\4.2\\kill_the_man_game_OpenGL\\tire.bmp");
+    v.push_back(ID);
+
+    LoadTexture("F:\\4.2\\kill_the_man_game_OpenGL\\car_body.bmp");
+    v.push_back(ID);
+
+    LoadTexture("F:\\4.2\\kill_the_man_game_OpenGL\\redlight.bmp");
+    v.push_back(ID);
+
+    LoadTexture("F:\\4.2\\kill_the_man_game_OpenGL\\number_plate.bmp");
+    v.push_back(ID);
+
+    LoadTexture("F:\\4.2\\kill_the_man_game_OpenGL\\head_light.bmp");
     v.push_back(ID);
 
 }
@@ -472,109 +500,6 @@ void drawaxes()
 
 }
 
-void fan_handle()
-{
-    glPushMatrix();
-    glTranslatef(100,3.5,-10);
-    glScalef(.5,.5,.5);
-
-    glPushMatrix();
-    glTranslatef(0.0,7.0,0.0);
-    glScalef(0.2,1.0,0.2);
-    drawcube(white[0],white[1],white[2],1,1,1);
-    glPopMatrix();
-    glPopMatrix();
-}
-
-void fan()
-{
-
-    glPushMatrix();
-    glTranslatef(100,3.5,-10);
-    glScalef(.5,.5,.5);
-    //glRotatef( alpha,axis_x, axis_y, 0.0 );
-    glRotatef( theta, axis_x, axis_y, 0.0 );
-
-
-    glPushMatrix();
-    glRotatef(theta_pakha, 0.0, 1.0, 0.0);
-    glTranslatef(0.0, 7.0, 0.0);
-    glScalef(0.4, 0.4, 0.4);
-
-
-    //pakha one
-    glPushMatrix();
-    glScalef(7.0,0.3,2.0);
-    drawcube(white[0],white[1],white[2],1,1,1);
-    glPopMatrix();
-    //pakha two
-    glPushMatrix();
-    glRotatef(120, 0.0, 1.0, 0.0);
-    glScalef(7.0,0.3,2.0);
-    drawcube(white[0],white[1],white[2],1,1,1);
-    glPopMatrix();
-    //pakha three
-    glPushMatrix();
-    glRotatef(240, 0.0, 1.0, 0.0);
-    glScalef(7.0,0.3,1.5);
-    drawcube(white[0],white[1],white[2],1,1,1);
-    glPopMatrix();
-
-
-    glPopMatrix();
-
-
-    glPopMatrix();
-}
-
-void drawAlmari()
-{
-
-    float red[] = {1.0,0.0000, 0.0000};
-    float white[] = {1.0,1.0,1.0};
-    float brown[] = {0.5451, 0.2706, 0.0745};
-    //almari
-    glPushMatrix();
-    glTranslatef(10,0,-120);
-    glScalef(17,1.7,1.0);
-
-    drawcube(red[0],red[1],red[2],1,1,1);
-    glPopMatrix();
-
-    glPushMatrix();
-    glTranslatef(14,0.9,-119.5);
-    glScalef(7.3,1.4,1.0);
-//     float red[] = {1.0,0.0000, 0.0000};
-
-    drawcube(brown[0],brown[1],brown[2],1,1,1);
-
-    glPopMatrix();
-
-    glPushMatrix();
-    glTranslatef(55,0.9,-119.5);
-    glScalef(7.3,1.4,1.0);
-//     float red[] = {1.0,0.0000, 0.0000};
-
-    drawcube(brown[0],brown[1],brown[2],1,1,1);
-    glPopMatrix();
-
-    glPushMatrix();
-    glTranslatef(37,4,-114.5);
-    glScalef(.5,.3,.1);
-//     float red[] = {1.0,0.0000, 0.0000};
-
-    drawcube(white[0],white[1],white[2],1,1,1);
-    glPopMatrix();
-
-    glPushMatrix();
-    glTranslatef(68,4,-114.5);
-    glScalef(.5,.3,.1);
-//     float red[] = {1.0,0.0000, 0.0000};
-
-    drawcube(white[0],white[1],white[2],1,1,1);
-    glPopMatrix();
-
-}
 
 
 void drawTable()
@@ -744,10 +669,292 @@ void blok(float tebal, int ratiol, int ratiop)
 //	length = 1.0;
 }
 
+void spotlight(float x,float y, float z,float spt_cutoff)
+{
+    GLfloat l_no[] = {0, 0, 0, 1.0};
+    GLfloat l_amb[] = {0.1, 0.1, 0.1, 1.0};
+    GLfloat l_dif[] = {1,1,1,1};
+    GLfloat l_spec[] = {0.2,0.2,0.2,1};
+    GLfloat l_pos3[] = {x,y+10,z+10,1.0};
+    glEnable(GL_LIGHT2);
+    glLightfv(GL_LIGHT2,GL_AMBIENT,l_amb);
+    glLightfv(GL_LIGHT2,GL_DIFFUSE,l_dif);
+    glLightfv(GL_LIGHT2,GL_SPECULAR,l_spec);
+    glLightfv(GL_LIGHT2,GL_POSITION,l_pos3);
+//    GLfloat l_spt[] = {0,0,-1,1};
+//    GLfloat spt_ct[] = {spt_cutoff};
+//    glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, l_spt);
+//    glLightfv(GL_LIGHT2, GL_SPOT_CUTOFF, spt_ct);
+
+    if(l_on3)
+    {
+
+        if(ambflag)
+        {
+            glLightfv(GL_LIGHT2,GL_AMBIENT,l_amb);
+        }
+        else
+        {
+            glLightfv(GL_LIGHT2,GL_AMBIENT,l_no);
+        }
+        if(difflag)
+        {
+            glLightfv(GL_LIGHT2,GL_DIFFUSE,l_dif);
+        }
+        else
+        {
+            glLightfv(GL_LIGHT2,GL_DIFFUSE,l_no);
+        }
+        if(specflag)
+        {
+            glLightfv(GL_LIGHT2,GL_SPECULAR,l_spec);
+        }
+        else
+        {
+            glLightfv(GL_LIGHT2,GL_SPECULAR,l_no);
+        }
+    }
+    else
+    {
+        glLightfv(GL_LIGHT2,GL_AMBIENT,l_no);
+        glLightfv(GL_LIGHT2,GL_DIFFUSE,l_no);
+        glLightfv(GL_LIGHT2,GL_SPECULAR,l_no);
+    }
+
+    GLfloat l_spt[] = {0,0,-1,1};
+    GLfloat spt_ct[] = {spt_cutoff};
+    glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, l_spt);
+    glLightfv(GL_LIGHT2, GL_SPOT_CUTOFF, spt_ct);
+
+
+}
+
+
+void Tire()
+{
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D,v[5]);
+
+    glPushMatrix();
+    GLfloat mat_ambient[] = { 1, 1, 1, 1.0 };
+    GLfloat mat_diffuse[] = { 1, 1, 1, 1.0 };
+    GLfloat mat_specular[] = { 0.1,0.1,0.1, 1.0 };
+    GLfloat mat_shininess[] = {90};
+
+    glMaterialfv( GL_FRONT, GL_AMBIENT, mat_ambient);
+    glMaterialfv( GL_FRONT, GL_DIFFUSE, mat_diffuse);
+    glMaterialfv( GL_FRONT, GL_SPECULAR, mat_specular);
+    glMaterialfv( GL_FRONT, GL_SHININESS, mat_shininess);
+    glutSolidTorus(0.2, 0.8, 5, 50);
+    glPopMatrix();
+
+
+
+
+    glPushMatrix();
+    glTranslated(0,-0.8,0);
+    glScaled(0.1,1.5,0.1);
+    drawcube(1,1,1,1,1,1);
+    glPopMatrix();
+
+
+
+
+    glPushMatrix();
+    glTranslated(0.8,0.0,0);
+    glRotatef(90,0,0,1);
+    glScaled(0.1,1.5,0.1);
+    drawcube(1,1,1,1,1,1);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslated(0.1,0.0,0);
+    glRotatef(45,0,0,1);
+    glPushMatrix();
+    glTranslated(0.8,0.0,0);
+    glRotatef(90,0,0,1);
+    glScaled(0.1,1.5,0.1);
+    drawcube(1,1,1,1,1,1);
+    glPopMatrix();
+    glPopMatrix();
+
+    glPushMatrix();
+    //glTranslated(0.0,0.0,0);
+    glRotatef(-45,0,0,1);
+    glPushMatrix();
+    glTranslated(0.8,0.0,0);
+    glRotatef(90,0,0,1);
+    glScaled(0.1,1.5,0.1);
+    drawcube(1,1,1,1,1,1);
+    glPopMatrix();
+    glPopMatrix();
+
+    glDisable(GL_TEXTURE_2D);
+
+
+}
+
+
+void car_body(void)
+{
+    //glRotatef(rot,0,1,0);
+    ///CAR nicher body
+    glBindTexture(GL_TEXTURE_2D,v[6]);
+    glEnable(GL_TEXTURE_2D);
+    glPushMatrix();
+    glTranslatef(-0.1-1+x_look,-2,-2+z_look);
+
+    //glRotatef(rot,0,1,0);
+
+    glScaled(2.2,1,4);
+    drawcube(1,1,1,1,1,1);
+    glDisable(GL_TEXTURE_2D);
+    //glRotatef(rot,0,1,0);
+    glPopMatrix();
+
+
+    spotlight(-1+x_look,-1.25,-1.9+z_look,30);
+    ///Red light1
+    glBindTexture(GL_TEXTURE_2D,v[7]);
+    glEnable(GL_TEXTURE_2D);
+    glPushMatrix();
+    glTranslatef(-1+x_look,-1.25,-1.9+z_look);
+    //reff();
+    glScaled(.4,.2,4);
+    drawcube(1,1,1,1,1,1);
+    glDisable(GL_TEXTURE_2D);
+    glPopMatrix();
+
+    ///red light 2
+    glBindTexture(GL_TEXTURE_2D,v[7]);
+    glEnable(GL_TEXTURE_2D);
+    glPushMatrix();
+    glTranslatef(0.6+x_look,-1.25,-1.9+z_look);
+    glScaled(.4,.2,4);
+    drawcube(1,1,1,1,1,1);
+    glDisable(GL_TEXTURE_2D);
+    glPopMatrix();
+
+    ///head light3
+    glBindTexture(GL_TEXTURE_2D,v[9]);
+    glEnable(GL_TEXTURE_2D);
+    glPushMatrix();
+    glTranslatef(-1+x_look,-1.25,1.9+z_look);
+    //reff();
+    glScaled(.4,.2,-4);
+    drawcube(1,1,1,1,1,1);
+    glDisable(GL_TEXTURE_2D);
+    glPopMatrix();
+
+    ///head light 4
+    glBindTexture(GL_TEXTURE_2D,v[9]);
+    glEnable(GL_TEXTURE_2D);
+    glPushMatrix();
+    glTranslatef(0.6+x_look,-1.25,1.9+z_look);
+    glScaled(.4,.2,-4);
+    drawcube(1,1,1,1,1,1);
+    glDisable(GL_TEXTURE_2D);
+    glPopMatrix();
+
+
+
+
+    ///numberplate
+    glBindTexture(GL_TEXTURE_2D,v[8]);
+    glEnable(GL_TEXTURE_2D);
+    glPushMatrix();
+    glTranslatef(-.3+x_look,-1.6,-1.9+z_look);
+    glScaled(.6,.4,4);
+    drawcube(1,1,1,1,1,1);
+    glDisable(GL_TEXTURE_2D);
+    glPopMatrix();
+
+
+    /*///BUMPER
+    glPushMatrix();
+    glTranslatef(-1+x_look,-1.8,-1.9+z_look);
+    glScaled(2,.1,4);
+    drawcube(255.1/255,255.1/255,255.1/255,1,1,1);
+    glPopMatrix();*/
+
+    ///CAR TOP
+    glBindTexture(GL_TEXTURE_2D,v[6]);
+    glEnable(GL_TEXTURE_2D);
+    glPushMatrix();
+    glTranslatef(-1+.05+x_look,-1,-1.1+z_look);
+    glScaled(1.9,.7,2);
+    drawcube(1,1,1,1,1,1);
+    glDisable(GL_TEXTURE_2D);
+    glPopMatrix();
+
+
+    ///back glass
+    glBindTexture(GL_TEXTURE_2D,v[4]);
+    glEnable(GL_TEXTURE_2D);
+    glPushMatrix();
+    glTranslated(-1+.15+.05+x_look,-1+.07,-1.1+z_look);
+    glScaled(1.6,.6,2.1);
+    drawcube(1,1,1,1,1,1);
+    glPopMatrix();
+    glDisable(GL_TEXTURE_2D);
+
+
+    ///Tyre
+    glPushMatrix();
+    glTranslatef(0.3-1.5+x_look,-1.9,-1.4+z_look);
+    glRotatef(90,0,1,0);
+    glScaled(0.5,0.5,0.5);
+    Tire();
+    glPopMatrix();
+    ///Tyre
+    glPushMatrix();
+    glTranslatef(-0.25+1.5+x_look,-1.9,-1.4+z_look);
+    glRotatef(90,0,1,0);
+    glScaled(0.5,0.5,0.5);
+    Tire();
+    glPopMatrix();
+
+
+    float dist=2.2;
+    ///Tyre
+    glPushMatrix();
+    glTranslatef(0.3-1.5+x_look,-1.9,-1.4+z_look+dist);
+    glRotatef(90,0,1,0);
+    glScaled(0.5,0.5,0.5);
+    Tire();
+    glPopMatrix();
+    ///Tyre
+    glPushMatrix();
+    glTranslatef(-0.25+1.5+x_look,-1.9,-1.4+z_look+dist);
+    glRotatef(90,0,1,0);
+    glScaled(0.5,0.5,0.5);
+    Tire();
+    glPopMatrix();
+}
 
 float moving = 0.0f;
 
 void car()
+{
+    glPushMatrix();
+
+//        glTranslatef(0, 0, -150);
+        glTranslatef(moving, 2.5, 5.5);
+        glRotatef(90, 0, -1, 0);
+        glScalef(1.0,1.0,1.0);
+
+        moving += 0.3f;
+        if(moving>300){
+            moving=0.0f;
+        }
+        car_body();
+//        glRotatef(Loop, 0.9, 4.0, 0.6);a
+
+    glPopMatrix();
+}
+
+
+void car1()
 {
     glPushMatrix();
         glScalef(.1,.1,.1);
@@ -908,7 +1115,7 @@ void Tree(double pos_x=0.4,double pos_y=0.3,double pos_z =10)
 
     glPushMatrix();
     Cylinder3D(pos_x,pos_y,pos_z);
-    glDisable(GL_TEXTURE_2D);
+//    glDisable(GL_TEXTURE_2D);
     glPopMatrix();
 
     glDisable(GL_TEXTURE_2D);
@@ -1376,6 +1583,24 @@ void myKeyboardFunc( unsigned char key, int x, int y )
         light1();
         break;
 
+    case 'h':
+    case 'H':
+        l_on3=1-l_on3;
+        break;
+
+    case 'i':
+    case 'I':
+        ambflag=1-ambflag;
+        break;
+
+    case 't':
+    case 'T':
+        difflag=1-difflag;
+        break;
+    case 'u':
+    case 'U':
+        specflag=1-specflag;
+        break;
 
     case 27:	// Escape key
         exit(1);
