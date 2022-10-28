@@ -912,3 +912,11 @@
 	<windows.h>
 	<math.h>
 
+1619285340 source:f:\4.2\kill_the_man_game_opengl\bmploader.cpp
+	"BmpLoader.h"
+	<stdio.h>
+	<iostream>
+
+1619284968 f:\4.2\kill_the_man_game_opengl\bmploader.h
+	<windows.h>
+

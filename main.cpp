@@ -140,7 +140,7 @@ void LoadTexture(const char*filename)
 }
 void texture_image()
 {
-    LoadTexture("C:\\Users\\USER\\Desktop\\inside_room\\star_moon.bmp"); //0
+    LoadTexture("F:\\4.2\\kill_the_man_game_OpenGL\\treeside.bmp"); //0
     v.push_back(ID);
     LoadTexture("C:\\Users\\USER\\Desktop\\inside_room\\star_moon1.bmp"); //0
     v.push_back(ID);
@@ -893,12 +893,15 @@ void Tree(double pos_x=0.4,double pos_y=0.3,double pos_z =10)
 
 
 
-    glPushMatrix();
-    glBindTexture(GL_TEXTURE_2D,15);
     glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D,v[0]);
+
+    glPushMatrix();
     Cylinder3D(pos_x,pos_y,pos_z);
     glDisable(GL_TEXTURE_2D);
     glPopMatrix();
+
+    glDisable(GL_TEXTURE_2D);
 
 
     glPushMatrix();
@@ -1393,6 +1396,8 @@ int main (int argc, char **argv)
     glutInitWindowPosition(100,100);
     glutInitWindowSize(windowHeight, windowWidth);
     glutCreateWindow("Kill The Man");
+
+    texture_image();
 
     glShadeModel( GL_SMOOTH );
     glEnable( GL_DEPTH_TEST );
