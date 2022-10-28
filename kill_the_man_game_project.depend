@@ -902,7 +902,7 @@
 1526093416 c:\program files\codeblocks\mingw\x86_64-w64-mingw32\include\math.h
 	<crtdefs.h>
 
-1666516678 source:f:\4.2\kill_the_man_game_opengl\main.cpp
+1666937671 source:f:\4.2\kill_the_man_game_opengl\main.cpp
 	<bits/stdc++.h>
 	<GL/gl.h>
 	<GL/glu.h>
@@ -911,6 +911,7 @@
 	<stdio.h>
 	<windows.h>
 	<math.h>
+	"BmpLoader.h"
 
 1619285340 source:f:\4.2\kill_the_man_game_opengl\bmploader.cpp
 	"BmpLoader.h"

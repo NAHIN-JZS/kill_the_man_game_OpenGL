@@ -142,7 +142,12 @@ void texture_image()
 {
     LoadTexture("F:\\4.2\\kill_the_man_game_OpenGL\\treeside.bmp"); //0
     v.push_back(ID);
-    LoadTexture("C:\\Users\\USER\\Desktop\\inside_room\\star_moon1.bmp"); //0
+    LoadTexture("F:\\4.2\\kill_the_man_game_OpenGL\\grass.bmp"); //0
+    v.push_back(ID);
+    LoadTexture("F:\\4.2\\kill_the_man_game_OpenGL\\soil_grass3.bmp");
+    v.push_back(ID);
+
+    LoadTexture("F:\\4.2\\kill_the_man_game_OpenGL\\road.bmp");
     v.push_back(ID);
 
 }
@@ -729,10 +734,14 @@ void blok(float tebal, int ratiol, int ratiop)
 		{
 			glTranslatef(tebal, 0.0, 0.0);
 			glutSolidCube(tebal);
+//            length = tebal;
+//            drawcube(white[0],white[1],white[2],1,1,1);
 		}
+
 		glTranslatef(-(ratiol - 1) * tebal / 2, 0.0, tebal);
 	}
 	glPopMatrix();
+//	length = 1.0;
 }
 
 
@@ -741,29 +750,30 @@ float moving = 0.0f;
 void car()
 {
     glPushMatrix();
+        glScalef(.1,.1,.1);
 //        glTranslatef(0, 0, -150);
-        glTranslatef(moving, 0, 15);
-        moving += 0.3f;
-        if(moving>199){
+        glTranslatef(moving, 15.0, 150);
+        moving += 0.8f;
+        if(moving>300){
             moving=0.0f;
         }
         Loop++;
 //        glRotatef(Loop, 0.9, 4.0, 0.6);
         glPushMatrix();
-            glColor3f(0.1, 0.1,1.0);
+            glColor3f(1, 1,1.0);
             blok(1, 0.3, 0.2);
 
-            glColor3f(1, 0.1,1.0);
+            glColor3f(1, 1,1.0);
             glTranslatef(0, 9, 0);
             blok(1, 0.3, 0.2);
 
-            glColor3f(0, 1,1.0);
+            glColor3f(1, 1,1.0);
             glTranslatef(10, -10, 0);
             blok(1, 0.55, 0.2);
 
             glRotatef(-35, 0, 0, 15);
             glTranslatef(0, 7, 0);
-            glColor3f(1,0,.5);
+            glColor3f(1,1,1);
             blok(1, 0.2, 0.2);
 
             glTranslatef(2, 4.9, -2.5);
@@ -785,22 +795,22 @@ void car()
         glPushMatrix();
             // tire
             // 1
-            glColor3f(0.4, 0.4, 0.4);
+            glColor3f(1.0, 1.0, 1.0);
             glTranslatef(20, -8, -7);
             cylinder(5, 5, 3);
             // 2
-            glColor3f(0.4, 0.4, 0.4);
+            glColor3f(1.0, 1.0, 1.0);
             glTranslatef(-20, 8, 7);
             glTranslatef(-5, -8, -7);
             cylinder(5, 5, 3);
             // 3
-            glColor3f(0.4, 0.4, 0.4);
+            glColor3f(1.0, 1.0, 1.0);
             glTranslatef(5, 8, 7);
             glRotatef(180, 0, 180, 0);
             glTranslatef(3, -8, -17);
             cylinder(5, 5, 3);
             // 4
-            glColor3f(0.4, 0.4, 0.4);
+            glColor3f(1.0, 1.0, 1.0);
             glTranslatef(-3, 8, 17);
             glTranslatef(-22, -8, -17);
             cylinder(5, 5, 3);
@@ -824,18 +834,18 @@ void car()
             blok(0.2, 0.4, 0.5);
 
             // light front
-            glColor3f(9.9, 9.9, 0.0);
+            glColor3f(1.0, 1.0, 1.0);
             glRotatef(90, 0, 1, 0);
             glTranslatef(0, -3, 20);
             cylinder(2, 2, 3);
 
-            glColor3f(9.9, 9.9, 0.0);
+            glColor3f(1.0, 1.0, 1.0);
             glRotatef(0, 0, 0, 0);
             glTranslatef(0, -12, 0);
             cylinder(2, 2, 3);
 
             // light back
-            glColor3f(1, 0.0, 0.0);
+            glColor3f(1.0, 1.0, 1.0);
             glRotatef(0, 0, 0, 0);
             glTranslatef(0, 0, -52);
             cylinder(1, 1, 3);
@@ -845,7 +855,7 @@ void car()
             glTranslatef(-8, 3.5, -12);
             blok(0.2, 0.4, 0.8);
 
-            glColor3f(9.0, 0.0, 0.0);
+            glColor3f(1.0, 1.0, 1.0);
             glRotatef(0, 0, 0, 0);
             glTranslatef(-8, 28, 0);
             cylinder(1, 1, 12);
@@ -1035,7 +1045,8 @@ void piler()
 
 void drawRoad()
 {
-    //floor
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D,v[3]);
     glPushMatrix();
     glTranslatef(-100,0.01,10);
     glScalef(200,0,10);
@@ -1043,16 +1054,21 @@ void drawRoad()
     drawcube(black[0],black[1],black[2],1,1,1);
     glPopMatrix();
 
+    glDisable(GL_TEXTURE_2D);
+
 }
 void drawRoom()
 {
     //floor
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D,v[2]);
     glPushMatrix();
     glTranslatef(-100,0,0);
     glScalef(200,0,30);
 
     drawcube(brown[0],brown[1],brown[2],1,1,1);
     glPopMatrix();
+    glDisable(GL_TEXTURE_2D);
 
 }
 
@@ -1205,11 +1221,12 @@ void display(void)
 
     drawaxes();
 
-    drawcube(redish[0],redish[1],redish[2],1,1,1);
+    //drawcube(redish[0],redish[1],redish[2],1,1,1);
+//    glutSolidCube(1.0);
     drawRoom();
     drawRoad();
     piler();
-    //car();
+    car();
 
 //    glPushMatrix();
 //    glTranslatef(100,3.5,-10);
