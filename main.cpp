@@ -60,6 +60,9 @@ float red[] = {1.0,0.0000, 0.0000};
 float brown[] = {0.5451, 0.2706, 0.0745};
 float black[] = {0.0, 0.0, 0.0};
 
+bool car_running = true;
+float car_x =0.0f ,car_y=2.5,car_z=5.5;
+
 vector<int> v;
 unsigned int ID;
 
@@ -500,6 +503,114 @@ void drawaxes()
 
 }
 
+// bomb
+float currentX = 0, currentY = 0, currentZ = 0;
+float destionationX = 25, destionationY = 0, destionationZ = 0;
+
+float getPt( float n1 , float n2 , float perc ) {
+    float diff = n2 - n1;
+    return n1 + ( diff * perc );
+}
+
+struct Point{
+    float x,y,z;
+};
+
+GLfloat xTarget = 0, yTarget = 0, zTarget = 0;
+bool canChangeTheTarget = true;
+void target()
+{
+    glPushMatrix();
+        glScalef(1, 1, 1);
+        glTranslatef(xTarget, yTarget, zTarget);
+        glColor3f(green[0], green[1], green[2]);
+        drawcube(green[0], green[1], green[2], 1, 1, 1);
+    glPopMatrix();
+}
+
+vector<Point>missile_v;
+
+int pos;
+bool shouldThrow;
+float bomb_effect = 10.0;
+float xMissile, yMissile, zMissile;
+
+void bomb()
+{
+    glPushMatrix();
+        missile_v.clear();
+//        cout<<"eyeX "<<eyeX<<' '<<eyeY<<' '<<eyeZ<<endl;
+//        float x1=0, y1=0, z1=0, x3=xTarget, y3=yTarget, z3=zTarget;
+        float x1=eyeX+0.5, y1=eyeY+0.5, z1=eyeZ, x3=xTarget, y3=yTarget, z3=zTarget;
+//        float x1=eyeX+5, y1=eyeY, z1=eyeZ, x3=xTarget, y3=yTarget, z3=zTarget;
+        float x2=(x1+x3)/2, y2=max(y1,y3) + 1, z2=(z1+z3)/2;
+        for( float i = 0 ; i < 1 ; i += 0.01 ) {
+            float xa = getPt(x1, x2, i);
+            float ya = getPt(y1, y2, i);
+            float za = getPt(z1, z2, i);
+            float xb = getPt(x2, x3, i);
+            float yb = getPt(y2, y3, i);
+            float zb = getPt(z2, z3 ,i);
+
+            float x = getPt(xa, xb, i);
+            float y = getPt(ya, yb, i);
+            float z = getPt(za, zb, i);
+
+            Point point3d;
+            point3d.x = x;
+            point3d.y = y;
+            point3d.z = z;
+            missile_v.push_back(point3d);
+        }
+
+        glPushMatrix();
+            glBegin(GL_POINTS);
+            for(auto it:missile_v){
+                glColor3f(1, 1, 1);
+                glVertex3f(it.x,it.y,it.z);
+            }
+            glEnd();
+        glPopMatrix();
+
+        if(shouldThrow==true){
+            glPushMatrix();
+                glScalef(1,1,1);
+                glTranslatef(missile_v[pos].x, missile_v[pos].y, missile_v[pos].z);
+                glColor3f(1,1,1);
+                drawcube(white[0],white[1],white[2],1,1,1);
+
+                std::this_thread::sleep_for(std::chrono::milliseconds(17));
+
+                pos++;
+                if(pos==missile_v.size()){
+//                        if((xTarget < (car_x +bomb_effect) || xTarget > (car_x -bomb_effect)) && (yTarget < (car_y +bomb_effect) || yTarget >(car_y -bomb_effect)) && (zTarget < (car_z +bomb_effect) || zTarget > (car_z -bomb_effect))){
+                        if(abs(xTarget-car_x)<bomb_effect && abs(yTarget-car_y)<bomb_effect && abs(zTarget-car_z)<bomb_effect){
+                            car_running = false;
+                        }
+                    pos = 0;
+                    shouldThrow=false;
+                    canChangeTheTarget = true;
+
+                }
+
+            glPopMatrix();
+        }
+    glPopMatrix();
+}
+
+void throwTheMissile()
+{
+    shouldThrow = true;
+    canChangeTheTarget = false;
+}
+
+void missileLauncher()
+{
+    glPushMatrix();
+
+    glPopMatrix();
+}
+
 
 
 void drawTable()
@@ -932,21 +1043,24 @@ void car_body(void)
     glPopMatrix();
 }
 
-float moving = 0.0f;
+//float moving = 0.0f;
 
 void car()
 {
     glPushMatrix();
 
 //        glTranslatef(0, 0, -150);
-        glTranslatef(moving, 2.5, 5.5);
+        glTranslatef(car_x, car_y, car_z);
         glRotatef(90, 0, -1, 0);
         glScalef(1.0,1.0,1.0);
 
-        moving += 0.3f;
-        if(moving>300){
-            moving=0.0f;
+        if (car_running){
+            car_x += 0.3f;
+        if(car_x>100){
+            car_x=0.0f;
         }
+        }
+
         car_body();
 //        glRotatef(Loop, 0.9, 4.0, 0.6);a
 
@@ -954,7 +1068,7 @@ void car()
 }
 
 
-void car1()
+/*void car1()
 {
     glPushMatrix();
         glScalef(.1,.1,.1);
@@ -995,7 +1109,7 @@ void car1()
             glRotatef(90, 45,-45, 0);
             cylinder(2,2,30);
             glRotatef(90, -45, 90, 90);
-            blok(5, 3, 2);*/
+            blok(5, 3, 2);*//*
 
         glPopMatrix();
 
@@ -1068,7 +1182,7 @@ void car1()
             cylinder(1, 1, 12);
         glPopMatrix();
     glPopMatrix();
-}
+}*/
 
 void jhop(double pos_x=6.0,double pos_y=0.0,double pos_z =0.0)
 {
@@ -1434,6 +1548,8 @@ void display(void)
     drawRoad();
     piler();
     car();
+    bomb();
+    target();
 
 //    glPushMatrix();
 //    glTranslatef(100,3.5,-10);
@@ -1601,6 +1717,38 @@ void myKeyboardFunc( unsigned char key, int x, int y )
     case 'U':
         specflag=1-specflag;
         break;
+
+        // throw the missile
+        case '4':
+            throwTheMissile();
+            break;
+
+        // to move the target
+        case 'g': // up
+            if(canChangeTheTarget==false) break;
+            zTarget--;
+            break;
+        case 'b': // down
+            if(canChangeTheTarget==false) break;
+            zTarget++;
+            break;
+        case 'v': // left
+            if(canChangeTheTarget==false) break;
+            xTarget--;
+            break;
+        case 'n': // right
+            if(canChangeTheTarget==false) break;
+            xTarget++;
+            break;
+        case 'G': // up
+            if(canChangeTheTarget==false) break;
+            yTarget++;
+            break;
+        case 'B': // down
+            if(canChangeTheTarget==false) break;
+            yTarget--;
+            break;
+
 
     case 27:	// Escape key
         exit(1);
