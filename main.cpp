@@ -44,6 +44,9 @@ bool l_on3 = true;
 bool ambflag=true;
 bool difflag=true;
 bool specflag=true;
+bool game_over = false;
+bool win = false;
+bool loose = false;
 
 bool ambient0 = true, diffuse0 = true, specular0 = true;
 bool ambient1 = true, diffuse1 = true, specular1 = true;
@@ -179,6 +182,9 @@ void texture_image()
     v.push_back(ID);
 
     LoadTexture("F:\\4.2\\kill_the_man_game_OpenGL\\head_light.bmp");
+    v.push_back(ID);
+
+    LoadTexture("F:\\4.2\\kill_the_man_game_OpenGL\\head_light_on.bmp");
     v.push_back(ID);
 
 }
@@ -398,6 +404,33 @@ void circle_3D(GLdouble radius)
 
 }
 
+void textDisplay(string str,int x,int y,int z)
+{
+
+    GLfloat mat_ambient[] = { 1, 1, 0, 1.0 };
+    GLfloat mat_diffuse[] = { 1, 1, 0, 1.0 };
+    GLfloat mat_specular[] = { 1,1,1, 1.0 };
+    GLfloat mat_shininess[] = {100};
+
+    glMaterialfv( GL_FRONT, GL_AMBIENT, mat_ambient);
+    glMaterialfv( GL_FRONT, GL_DIFFUSE, mat_diffuse);
+    glMaterialfv( GL_FRONT, GL_SPECULAR, mat_specular);
+    glMaterialfv( GL_FRONT, GL_SHININESS, mat_shininess);
+    glEnable(GL_LINE_SMOOTH);
+    glLineWidth(3);
+    //glColor3b(1,0,0);
+    glPushMatrix();
+    glTranslatef(x, y,z);
+    glScalef(0.03f,0.02f,1);
+
+    for (int i=0; i<str.size(); i++)
+    {
+        glutStrokeCharacter(GLUT_STROKE_ROMAN, str[i]);
+    }
+    glPopMatrix();
+}
+
+
 void FrustumChange(bool positive = true)
 {
     if(positive)nearP++;
@@ -587,6 +620,13 @@ void bomb()
 //                        if((xTarget < (car_x +bomb_effect) || xTarget > (car_x -bomb_effect)) && (yTarget < (car_y +bomb_effect) || yTarget >(car_y -bomb_effect)) && (zTarget < (car_z +bomb_effect) || zTarget > (car_z -bomb_effect))){
                         if(abs(xTarget-car_x)<bomb_effect && abs(yTarget-car_y)<bomb_effect && abs(zTarget-car_z)<bomb_effect){
                             car_running = false;
+                            game_over = true;
+                            win = true;
+                        }
+                        else{
+                            car_running = false;
+                            game_over = true;
+                            loose = true;
                         }
                     pos = 0;
                     shouldThrow=false;
@@ -829,7 +869,13 @@ void car_body(void)
 
     spotlight(1.0+x_look,-1.25,1.9+z_look,30);
     ///head light3
-    glBindTexture(GL_TEXTURE_2D,v[9]);
+    if(l_on3){
+        glBindTexture(GL_TEXTURE_2D,v[10]);
+    }
+    else{
+        glBindTexture(GL_TEXTURE_2D,v[9]);
+    }
+
     glEnable(GL_TEXTURE_2D);
     glPushMatrix();
     glTranslatef(-1+x_look,-1.25,1.9+z_look);
@@ -840,7 +886,12 @@ void car_body(void)
     glPopMatrix();
 
     ///head light 4
-    glBindTexture(GL_TEXTURE_2D,v[9]);
+    if(l_on3){
+        glBindTexture(GL_TEXTURE_2D,v[10]);
+    }
+    else{
+        glBindTexture(GL_TEXTURE_2D,v[9]);
+    }
     glEnable(GL_TEXTURE_2D);
     glPushMatrix();
     glTranslatef(0.6+x_look,-1.25,1.9+z_look);
@@ -948,6 +999,9 @@ void car()
 
     glPopMatrix();
 }
+
+
+
 
 
 
@@ -1214,6 +1268,20 @@ void display(void)
     car();
     bomb();
     target();
+    if(win){
+        string g_msg = "You Win!!!!";
+        textDisplay(g_msg,x_look-5,6,z_look+10);
+    }
+    else if(loose){
+        string g_msg = "You Loose!!!!";
+        textDisplay(g_msg,x_look-5,6,z_look+10);
+    }
+    if(game_over){
+        string g_over = "Game Over!";
+        textDisplay(g_over,x_look-5,3,z_look+10);
+    }
+
+
 
 //    glPushMatrix();
 //    glTranslatef(100,3.5,-10);
