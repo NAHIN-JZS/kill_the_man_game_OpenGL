@@ -272,7 +272,7 @@ void light1()
 //    glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, spot_direction);
 //    glLightf( GL_LIGHT1, GL_SPOT_CUTOFF, 10.0);
 
-    glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 20.0);
+    glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 0.0);
     glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, spot_direction);
 //    glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, 2.0);
 
@@ -532,7 +532,7 @@ vector<Point>missile_v;
 
 int pos;
 bool shouldThrow;
-float bomb_effect = 10.0;
+float bomb_effect = 20.0;
 float xMissile, yMissile, zMissile;
 
 void bomb()
@@ -579,10 +579,11 @@ void bomb()
                 glColor3f(1,1,1);
                 drawcube(white[0],white[1],white[2],1,1,1);
 
-                std::this_thread::sleep_for(std::chrono::milliseconds(17));
+//                std::this_thread::sleep_for(std::chrono::milliseconds(17));
 
-                pos++;
-                if(pos==missile_v.size()){
+                pos+=5;
+
+                if(pos>=missile_v.size()){
 //                        if((xTarget < (car_x +bomb_effect) || xTarget > (car_x -bomb_effect)) && (yTarget < (car_y +bomb_effect) || yTarget >(car_y -bomb_effect)) && (zTarget < (car_z +bomb_effect) || zTarget > (car_z -bomb_effect))){
                         if(abs(xTarget-car_x)<bomb_effect && abs(yTarget-car_y)<bomb_effect && abs(zTarget-car_z)<bomb_effect){
                             car_running = false;
@@ -609,135 +610,6 @@ void missileLauncher()
     glPushMatrix();
 
     glPopMatrix();
-}
-
-
-
-void drawTable()
-{
-
-    //table
-    glPushMatrix();
-    glTranslatef(170,0,3);
-    glScalef(0.6,0.9,.4);
-    drawcube(brown[0],brown[1],brown[2],1,1,1);
-    glPopMatrix();
-
-    glPushMatrix();
-    glTranslatef(195,0,3);
-    glScalef(0.6,0.9,.4);
-    drawcube(brown[0],brown[1],brown[2],1,1,1);
-    glPopMatrix();
-
-    glPushMatrix();
-    glTranslatef(170,0,-50);
-    glScalef(0.6,0.9,.4);
-    drawcube(brown[0],brown[1],brown[2],1,1,1);
-    glPopMatrix();
-
-    glPushMatrix();
-    glTranslatef(195,0,-50);
-    glScalef(0.6,0.9,.4);
-    drawcube(brown[0],brown[1],brown[2],1,1,1);
-    glPopMatrix();
-
-    glPushMatrix();
-    glTranslatef(170,4,5);
-    glScalef(6,.1,-11.5);
-    drawcube(brown[0],brown[1],brown[2],1,1,1);
-    glPopMatrix();
-
-}
-
-void drawLaptop()
-{
-
-//laptop
-
-    glPushMatrix();
-//    glColor3f(0.3, 0.4, 0.5);
-    glTranslatef(170, 4.9, -25);
-    glScalef(2.5, 0.0, 3);
-
-    drawcube(black[0],black[1],black[2],1,1,1);
-    glPopMatrix();
-
-
-    glPushMatrix();
-//    glColor3f(0.3, 0.4, 0.5);
-    glTranslatef(183, 4.9, -25);
-    glScalef(0, 0.2, 3);
-    float pink[] = {1.0, 0.1, 1.0};
-    drawcube(pink[0],pink[1],pink[2],1,1,1);
-    glPopMatrix();
-
-
-//    glPushMatrix();
-//    glTranslatef(166.5, 5.05, -13);
-//    glScalef(0, 0.155, 2.4);
-//    color = {1.0, 1.0, 1.0};
-
-    glPushMatrix();
-//    glColor3f(0.3, 0.4, 0.5);
-    glTranslatef(182.5, 5.05, -23);
-    glScalef(0, 0.155, 2.4);
-//    color = {1.0, 1.0, 1.0};
-    drawcube(white[0], white[1],white[2],1,1,1);
-    glPopMatrix();
-
-}
-
-void drawChair()
-{
-
-    //Chair
-    glPushMatrix();
-    glTranslatef(155, 0, -10);
-    glScalef(0.6, 1, .4);
-//    vector<float> color = {1.0, 1.0, 1.0};
-    float yellow[] = {0.5451, 0.2706, 0.0745};
-    drawcube(yellow[0],yellow[1],yellow[2],1,1,1);
-    glPopMatrix();
-
-    glPushMatrix();
-    glTranslatef(155, 0, -30);
-    glScalef(0.6, 1, .4);
-//    color = {1.0, 1.0, 1.0};
-    drawcube(yellow[0],yellow[1],yellow[2],1,1,1);
-    glPopMatrix();
-
-    glPushMatrix();
-    glTranslatef(175, 0, -10);
-    glScalef(0.6, 0.4, .4);
-//    color = {1.0, 1.0, 1.0};
-    drawcube(yellow[0],yellow[1],yellow[2],1,1,1);
-    glPopMatrix();
-
-    glPushMatrix();
-    glTranslatef(175, 0, -30);
-    glScalef(0.6, 0.4, .4);
-//    color = {1.0, 1.0, 1.0};
-    drawcube(yellow[0],yellow[1],yellow[2],1,1,1);
-    glPopMatrix();
-
-//     upper portion of the chair
-    glPushMatrix();
-    glTranslatef(157, 1.9, -7.8);
-    glScalef(4.5, 0.1, -4.5);
-//    color = {1.0, 0.0, 0.0};
-    drawcube(yellow[0],yellow[1],yellow[2],1,1,1);
-    glPopMatrix();
-
-
-    //
-    glPushMatrix();
-    glTranslatef(155, 3.3, -27.5);
-    glScalef(0.6, 0.3, 3.5);
-//    color = {1.0, 1.0, 0.0};
-    drawcube(white[0],white[1],white[2],1,1,1);
-    glPopMatrix();
-
-
 }
 
 
@@ -782,15 +654,22 @@ void blok(float tebal, int ratiol, int ratiop)
 
 void spotlight(float x,float y, float z,float spt_cutoff)
 {
-    GLfloat l_no[] = {0, 0, 0, 1.0};
+    /*GLfloat l_no[] = {0, 0, 0, 1.0};
     GLfloat l_amb[] = {0.1, 0.1, 0.1, 1.0};
     GLfloat l_dif[] = {1,1,1,1};
-    GLfloat l_spec[] = {0.2,0.2,0.2,1};
+    GLfloat l_spec[] = {0.2,0.2,0.2,1};*/
+
+    GLfloat no_light[] = { 0.0, 0.0, 0.0, 1.0 };
+    GLfloat light_ambient[]  = {0.5, 0.5, 0.5, 1.0};
+    GLfloat light_diffuse[]  = { 1.0, 1.0, 1.0, 1.0 };
+    GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+//    GLfloat light_position[] = { 200, 9.5, -15 };  //0.7, 1.5, 9.0
+
     GLfloat l_pos3[] = {x,y+10,z+10,1.0};
     glEnable(GL_LIGHT2);
-    glLightfv(GL_LIGHT2,GL_AMBIENT,l_amb);
-    glLightfv(GL_LIGHT2,GL_DIFFUSE,l_dif);
-    glLightfv(GL_LIGHT2,GL_SPECULAR,l_spec);
+    glLightfv(GL_LIGHT2,GL_AMBIENT,light_ambient);
+    glLightfv(GL_LIGHT2,GL_DIFFUSE,light_diffuse);
+    glLightfv(GL_LIGHT2,GL_SPECULAR,light_specular);
     glLightfv(GL_LIGHT2,GL_POSITION,l_pos3);
 //    GLfloat l_spt[] = {0,0,-1,1};
 //    GLfloat spt_ct[] = {spt_cutoff};
@@ -802,35 +681,37 @@ void spotlight(float x,float y, float z,float spt_cutoff)
 
         if(ambflag)
         {
-            glLightfv(GL_LIGHT2,GL_AMBIENT,l_amb);
+            glLightfv(GL_LIGHT2,GL_AMBIENT,light_ambient);
         }
         else
         {
-            glLightfv(GL_LIGHT2,GL_AMBIENT,l_no);
+            glLightfv(GL_LIGHT2,GL_AMBIENT,no_light);
         }
         if(difflag)
         {
-            glLightfv(GL_LIGHT2,GL_DIFFUSE,l_dif);
+            glLightfv(GL_LIGHT2,GL_DIFFUSE,light_diffuse);
         }
         else
         {
-            glLightfv(GL_LIGHT2,GL_DIFFUSE,l_no);
+            glLightfv(GL_LIGHT2,GL_DIFFUSE,no_light);
         }
         if(specflag)
         {
-            glLightfv(GL_LIGHT2,GL_SPECULAR,l_spec);
+            glLightfv(GL_LIGHT2,GL_SPECULAR,light_specular);
         }
         else
         {
-            glLightfv(GL_LIGHT2,GL_SPECULAR,l_no);
+            glLightfv(GL_LIGHT2,GL_SPECULAR,no_light);
         }
     }
     else
     {
-        glLightfv(GL_LIGHT2,GL_AMBIENT,l_no);
-        glLightfv(GL_LIGHT2,GL_DIFFUSE,l_no);
-        glLightfv(GL_LIGHT2,GL_SPECULAR,l_no);
+        glLightfv(GL_LIGHT2,GL_AMBIENT,no_light);
+        glLightfv(GL_LIGHT2,GL_DIFFUSE,no_light);
+        glLightfv(GL_LIGHT2,GL_SPECULAR,no_light);
     }
+
+//    GLfloat l_spt[] = {0,0,-1,1};
 
     GLfloat l_spt[] = {0,0,-1,1};
     GLfloat spt_ct[] = {spt_cutoff};
@@ -924,7 +805,7 @@ void car_body(void)
     glPopMatrix();
 
 
-    spotlight(-1+x_look,-1.25,-1.9+z_look,30);
+
     ///Red light1
     glBindTexture(GL_TEXTURE_2D,v[7]);
     glEnable(GL_TEXTURE_2D);
@@ -946,6 +827,7 @@ void car_body(void)
     glDisable(GL_TEXTURE_2D);
     glPopMatrix();
 
+    spotlight(1.0+x_look,-1.25,1.9+z_look,30);
     ///head light3
     glBindTexture(GL_TEXTURE_2D,v[9]);
     glEnable(GL_TEXTURE_2D);
@@ -1068,121 +950,6 @@ void car()
 }
 
 
-/*void car1()
-{
-    glPushMatrix();
-        glScalef(.1,.1,.1);
-//        glTranslatef(0, 0, -150);
-        glTranslatef(moving, 15.0, 150);
-        moving += 0.8f;
-        if(moving>300){
-            moving=0.0f;
-        }
-        Loop++;
-//        glRotatef(Loop, 0.9, 4.0, 0.6);
-        glPushMatrix();
-            glColor3f(1, 1,1.0);
-            blok(1, 0.3, 0.2);
-
-            glColor3f(1, 1,1.0);
-            glTranslatef(0, 9, 0);
-            blok(1, 0.3, 0.2);
-
-            glColor3f(1, 1,1.0);
-            glTranslatef(10, -10, 0);
-            blok(1, 0.55, 0.2);
-
-            glRotatef(-35, 0, 0, 15);
-            glTranslatef(0, 7, 0);
-            glColor3f(1,1,1);
-            blok(1, 0.2, 0.2);
-
-            glTranslatef(2, 4.9, -2.5);
-            glColor3f(1.0, 1.0, 1.0);// warna kaca
-            blok(0.05, 2, 3.1);
-
-            glRotatef(180, 45, -45, 0);
-            /*glTranslatef(0, 10,0);
-            blok(3, 2, 5);
-            cylinder(2,2,30);
-            glTranslatef(-10, -10,0);
-            glRotatef(90, 45,-45, 0);
-            cylinder(2,2,30);
-            glRotatef(90, -45, 90, 90);
-            blok(5, 3, 2);*//*
-
-        glPopMatrix();
-
-        glPushMatrix();
-            // tire
-            // 1
-            glColor3f(1.0, 1.0, 1.0);
-            glTranslatef(20, -8, -7);
-            cylinder(5, 5, 3);
-            // 2
-            glColor3f(1.0, 1.0, 1.0);
-            glTranslatef(-20, 8, 7);
-            glTranslatef(-5, -8, -7);
-            cylinder(5, 5, 3);
-            // 3
-            glColor3f(1.0, 1.0, 1.0);
-            glTranslatef(5, 8, 7);
-            glRotatef(180, 0, 180, 0);
-            glTranslatef(3, -8, -17);
-            cylinder(5, 5, 3);
-            // 4
-            glColor3f(1.0, 1.0, 1.0);
-            glTranslatef(-3, 8, 17);
-            glTranslatef(-22, -8, -17);
-            cylinder(5, 5, 3);
-
-            // window
-            glColor3f(1.0, 1.0, 1.0);
-            glRotatef(90, 1, 0, 0);
-            glTranslatef(8, 2.5, -15);
-            blok(0.2, 0.4, 0.5);
-            //
-            glRotatef(90, 0, 1, 0);
-            glTranslatef(0, -0.2, 7);
-            blok(0.2, 0.4, 0.8);
-            //
-            glRotatef(0, 0, 0, 0);
-            glTranslatef(0, 19.2, 0);
-            blok(0.2, 0.4, 0.8);
-            //
-            glRotatef(90, 0, 1, 0);
-            glTranslatef(7, 0, -8);
-            blok(0.2, 0.4, 0.5);
-
-            // light front
-            glColor3f(1.0, 1.0, 1.0);
-            glRotatef(90, 0, 1, 0);
-            glTranslatef(0, -3, 20);
-            cylinder(2, 2, 3);
-
-            glColor3f(1.0, 1.0, 1.0);
-            glRotatef(0, 0, 0, 0);
-            glTranslatef(0, -12, 0);
-            cylinder(2, 2, 3);
-
-            // light back
-            glColor3f(1.0, 1.0, 1.0);
-            glRotatef(0, 0, 0, 0);
-            glTranslatef(0, 0, -52);
-            cylinder(1, 1, 3);
-
-            glColor3f(1.0, 1.0, 1.0);
-            glRotatef(90, 1, 0, 0);
-            glTranslatef(-8, 3.5, -12);
-            blok(0.2, 0.4, 0.8);
-
-            glColor3f(1.0, 1.0, 1.0);
-            glRotatef(0, 0, 0, 0);
-            glTranslatef(-8, 28, 0);
-            cylinder(1, 1, 12);
-        glPopMatrix();
-    glPopMatrix();
-}*/
 
 void jhop(double pos_x=6.0,double pos_y=0.0,double pos_z =0.0)
 {
@@ -1216,11 +983,6 @@ void Tree(double pos_x=0.4,double pos_y=0.3,double pos_z =10)
 //void Tree()
 {
 
-
-
-//    int randm = 10;
-//    srand(5);
-//    randm = (rand() % 9) + 8;
 
 
 
@@ -1393,104 +1155,6 @@ void drawRoom()
 
 }
 
-void drawBed()
-{
-
-    //front bed side
-    glPushMatrix();
-    glTranslatef(5,2,0);
-    glScalef(20,0.2,1);
-//      float color[] = {128.0,0.0,0.0};
-
-    drawcube(redish[0],redish[1],redish[2],1,1,1);
-    glPopMatrix();
-
-
-
-    glPushMatrix();
-    //front-bottom bed leg
-    glTranslatef(100,0,0);
-//      float color[] = {128.0,0.0,0.0};
-
-    drawcube(redish[0],redish[1],redish[2],1,1,1);
-
-    //bottom bed side
-    glTranslatef(0,2,0);
-    glScalef(1,0.4,-10);
-//      float color[] = {128.0,0.0,0.0};
-
-    drawcube(redish[0],redish[1],redish[2],1,1,1);
-    glPopMatrix();
-
-
-
-    glPushMatrix();
-    //back-bottom bed leg
-    glTranslatef(100,0,-50);
-//      float color[] = {128.0,0.0,0.0};
-
-    drawcube(redish[0],redish[1],redish[2],1,1,1);
-
-    //back bed side
-    glTranslatef(5,2,0);
-    glScalef(-20,0.2,1);
-
-//      float color[] = {128.0,0.0,0.0};
-
-    drawcube(redish[0],redish[1],redish[2],1,1,1);
-
-    glPopMatrix();
-
-    glPushMatrix();
-    //back upper leg
-    glTranslatef(0,0,-50);
-
-//      float color[] = {128.0,0.0,0.0};
-
-    drawcube(redish[0],redish[1],redish[2],1,1,1);
-
-    //upper bed side
-    glTranslatef(0,2,0);
-    glScalef(1,0.5,10.5);
-
-//      float color[] = {128.0,0.0,0.0};
-
-    drawcube(redish[0],redish[1],redish[2],1,1,1);
-
-    glPopMatrix();
-
-    //bedsheet
-    glPushMatrix();
-    glTranslatef(5,3,5.3);
-    glScaled(19,.1,-11);
-
-    drawcube(white[0],white[1],white[2],1,1,1);
-    glPopMatrix();
-
-    //pillow
-    glPushMatrix();
-    glTranslatef(3,3.5,-1.5);
-    glScaled(5,.1,-8);
-
-
-    drawcube(ash[0],ash[1],ash[2],1,1,1);
-    glPopMatrix();
-
-    //katha
-    glPushMatrix();
-    glTranslatef(50,3,7.0);
-    glScaled(10,.15,-11.5);
-
-
-    drawcube(green[0],green[1],green[2],1,1,1);
-    glPopMatrix();
-
-//      glPushMatrix();
-//      glTranslatef(0,0,0);
-//      glScalef
-
-
-}
 
 
 void drawSphere(float am_r, float am_g, float am_b, float df_r, float df_g, float df_b )
@@ -1671,7 +1335,7 @@ void myKeyboardFunc( unsigned char key, int x, int y )
 
 
     //ambient light handle
-    case 'Q':
+    /*case 'Q':
         ambient1 = true;
         light1();
         break;
@@ -1697,14 +1361,14 @@ void myKeyboardFunc( unsigned char key, int x, int y )
     case 'e':
         specular1 = false;
         light1();
-        break;
+        break;*/
 
     case 'h':
     case 'H':
         l_on3=1-l_on3;
         break;
 
-    case 'i':
+    /*case 'i':
     case 'I':
         ambflag=1-ambflag;
         break;
@@ -1716,7 +1380,7 @@ void myKeyboardFunc( unsigned char key, int x, int y )
     case 'u':
     case 'U':
         specflag=1-specflag;
-        break;
+        break;*/
 
         // throw the missile
         case '4':
@@ -1794,7 +1458,7 @@ int main (int argc, char **argv)
     glEnable(GL_NORMALIZE);
     glEnable(GL_LIGHTING);
     light0();
-    light1();
+//    light1();
 
     glutKeyboardFunc(myKeyboardFunc);
     glutDisplayFunc(display);
