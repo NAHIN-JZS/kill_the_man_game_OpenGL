@@ -77,6 +77,7 @@ float black[] = {0.0, 0.0, 0.0};
 
 bool car_running = true;
 float car_x =-30.0f ,car_y=2.5,car_z=5.5;
+float meg_car_x =-35.0f ,meg_car_y=2.5,meg_car_z=5.5;
 
 vector<int> v;
 unsigned int ID;
@@ -161,14 +162,24 @@ void texture_image()
     LoadTexture("F:\\4.2\\kill_the_man_game_OpenGL\\fire.bmp");
     v.push_back(ID);
 
-    LoadTexture("F:\\4.2\\kill_the_man_game_OpenGL\\car_fire.bmp");
+    LoadTexture("F:\\4.2\\kill_the_man_game_OpenGL\\car_fire.bmp");//12
     v.push_back(ID);
 
-    LoadTexture("F:\\4.2\\kill_the_man_game_OpenGL\\soil.bmp");
+    LoadTexture("F:\\4.2\\kill_the_man_game_OpenGL\\soil.bmp");//13
     v.push_back(ID);
 
     LoadTexture("F:\\4.2\\kill_the_man_game_OpenGL\\moon.bmp");
     v.push_back(ID);
+
+    LoadTexture("F:\\4.2\\kill_the_man_game_OpenGL\\night_horizon4.bmp");//15
+    v.push_back(ID);
+
+    LoadTexture("F:\\4.2\\kill_the_man_game_OpenGL\\day_horizon2.bmp");
+    v.push_back(ID);
+
+    LoadTexture("F:\\4.2\\kill_the_man_game_OpenGL\\meg_car_body.bmp");
+    v.push_back(ID);
+
 
 }
 
@@ -554,7 +565,7 @@ void fire(float fire_x = 0.0,float fire_y = 0.0,float fire_z = 0.0){
 
 
 
-void textDisplay(string str,int x,int y,int z)
+void textDisplay(string str,int x,int y,int z,float line_width=2.0,float xSize = 0.03, float ySize = 0.02, float zSize = 1)
 {
 
     GLfloat mat_ambient[] = { 1, 1, 0, 1.0 };
@@ -567,11 +578,11 @@ void textDisplay(string str,int x,int y,int z)
     glMaterialfv( GL_FRONT, GL_SPECULAR, mat_specular);
     glMaterialfv( GL_FRONT, GL_SHININESS, mat_shininess);
     glEnable(GL_LINE_SMOOTH);
-    glLineWidth(3);
+    glLineWidth(line_width);
     //glColor3b(1,0,0);
     glPushMatrix();
     glTranslatef(x, y,z);
-    glScalef(0.03f,0.02f,1);
+    glScalef(xSize,ySize,zSize);
 
     for (int i=0; i<str.size(); i++)
     {
@@ -806,7 +817,7 @@ void drawaxes()
 
 }
 
-// bomb
+// bombbomb
 float currentX = 0, currentY = 0, currentZ = 0;
 float destionationX = 25, destionationY = 0, destionationZ = 0;
 
@@ -841,7 +852,7 @@ vector<Point>missile_v;
 
 int pos;
 bool shouldThrow;
-float bomb_effect = 10.0;
+float bomb_effect = 15.0;
 //float xMissile, yMissile, zMissile;
 
 /*void bomb()
@@ -927,7 +938,7 @@ void blust_mine(){
         bombBlustSound();
         bomb_sound = true;
     }
-    if(abs(xTarget-car_x)<bomb_effect && abs(yTarget-car_y)<bomb_effect && abs(zTarget-car_z)<bomb_effect){
+    if(abs(xTarget-meg_car_x)<bomb_effect && abs(yTarget-meg_car_y)<bomb_effect && abs(zTarget-meg_car_z)<bomb_effect){
 
                             car_running = false;
                             game_over = true;
@@ -944,7 +955,6 @@ void blust_mine(){
         win = false;
     }
 }
-
 
 
 
@@ -1084,16 +1094,16 @@ void Tire()
 }
 
 
-void car_body(void)
+void car_body(bool meg,int texture_id=6)
 {
     //glRotatef(rot,0,1,0);
 
     ///CAR nicher body
-    if(win){
+    if(win && meg){
             glBindTexture(GL_TEXTURE_2D,v[12]);
     }
     else{
-        glBindTexture(GL_TEXTURE_2D,v[6]);
+        glBindTexture(GL_TEXTURE_2D,v[texture_id]);
     }
 
     glEnable(GL_TEXTURE_2D);
@@ -1111,7 +1121,7 @@ void car_body(void)
 
 
     ///Red light1
-    if(win){
+    if(win&& meg){
             glBindTexture(GL_TEXTURE_2D,v[12]);
     }
     else{
@@ -1128,7 +1138,7 @@ void car_body(void)
     glPopMatrix();
 
     ///red light 2
-    if(win){
+    if(win&& meg){
             glBindTexture(GL_TEXTURE_2D,v[12]);
     }
     else{
@@ -1179,7 +1189,7 @@ void car_body(void)
 
 
     ///numberplate
-    if(win){
+    if(win&& meg){
             glBindTexture(GL_TEXTURE_2D,v[12]);
     }
     else{
@@ -1203,11 +1213,11 @@ void car_body(void)
     glPopMatrix();*/
 
     ///CAR TOP
-    if(win){
+    if(win&& meg){
             glBindTexture(GL_TEXTURE_2D,v[12]);
     }
     else{
-        glBindTexture(GL_TEXTURE_2D,v[6]);
+        glBindTexture(GL_TEXTURE_2D,v[texture_id]);
     }
 
     glEnable(GL_TEXTURE_2D);
@@ -1220,7 +1230,7 @@ void car_body(void)
 
 
     ///back glass
-    if(win){
+    if(win&& meg){
             glBindTexture(GL_TEXTURE_2D,v[12]);
     }
     else{
@@ -1271,12 +1281,17 @@ void car_body(void)
 
 //float moving = 0.0f;
 
-void car()
+void car(bool meg ,int texture_id=6)
 {
     glPushMatrix();
 
 //        glTranslatef(0, 0, -150);
-        glTranslatef(car_x, car_y, car_z);
+        if(!meg){
+            glTranslatef(car_x, car_y, car_z);
+        }
+        else{
+            glTranslatef(meg_car_x, meg_car_y, meg_car_z);
+        }
         glRotatef(90, 0, -1, 0);
         glPushMatrix();
 //        glTranslatef(-1+x_look,-1.25,1.9+z_look);
@@ -1285,13 +1300,15 @@ void car()
         glScalef(1.0,1.0,1.0);
 
         if (car_running){
-            car_x += 0.3f;
+            car_x += 0.1f;
+            meg_car_x += 0.113f;
         if(car_x>100){
-            car_x=0.0f;
+            car_x=-20.0f;
+            meg_car_x = -20.0f;
         }
         }
 
-        car_body();
+        car_body(meg, texture_id);
 //        glRotatef(Loop, 0.9, 4.0, 0.6);a
 
     glPopMatrix();
@@ -1387,9 +1404,9 @@ void Tree(double pos_x=0.4,double pos_y=0.3,double pos_z =10)
 }
 
 
-void piler()
+void setupTree()
 {
-    for(int i=-10; i<10; i ++)
+    for(int i=-10; i<10; i+=1.5)
     for(double j = 0;j<5; j=j+1.8){
     {
 
@@ -1436,9 +1453,9 @@ void piler()
         glPopMatrix();
     }
     }
-    for(int i=-10; i<10; i++)
+    for(int i=-10; i<10; i++){
         for(double j = 0;j<5; j=j+2){
-    {
+
 
         glPushMatrix();
         glTranslatef(10*i,-2.9,5-j);
@@ -1485,6 +1502,7 @@ void piler()
         }
 }
 
+
 void drawRoad()
 {
     glEnable(GL_TEXTURE_2D);
@@ -1499,6 +1517,29 @@ void drawRoad()
     glDisable(GL_TEXTURE_2D);
 
 }
+
+void horizon(){
+
+glEnable(GL_TEXTURE_2D);
+
+    if(day){
+        glBindTexture(GL_TEXTURE_2D,v[16]);
+
+    }
+    else{
+        glBindTexture(GL_TEXTURE_2D,v[15]);
+    }
+
+    glPushMatrix();
+//    glRotated(1,0,0,90);
+    glTranslatef(-100,0,0);
+    glScalef(256,64,1);
+
+    drawcube(1,1,1,1,1,1);
+    glPopMatrix();
+    glDisable(GL_TEXTURE_2D);
+}
+
 void drawRoom()
 {
     //floor
@@ -1506,9 +1547,9 @@ void drawRoom()
     glBindTexture(GL_TEXTURE_2D,v[2]);
     glPushMatrix();
     glTranslatef(-100,0,0);
-    glScalef(200,0,30);
+    glScalef(256,0,64);
 
-    drawcube(brown[0],brown[1],brown[2],1,1,1);
+    drawcube(white[0],white[1],white[2],1,1,1);
     glPopMatrix();
     glDisable(GL_TEXTURE_2D);
 
@@ -1597,7 +1638,22 @@ void drawSphere(float am_r, float am_g, float am_b, float df_r, float df_g, floa
 //    texture[1] = LoadTextureRAW( "F://4.2//academic//Graphics//fire//particle.raw",256,256);
 //load our texture
 }*/
+bool init= true;
+void initial(){
 
+light0(50,50,50);
+//board(0,0,20);
+string g_msg = "Khudiram Bose attempted to assassinate ";
+string g_msg1 = "Magistrate Douglas Kingsford";
+string g_msg2 = "But he failed";
+string g_msg3 = "Now, Its Your Turn To Kill The Tyrant Ruler";
+//        board(x_look-5,6,z_look+10);
+        textDisplay(g_msg,3.5,6,21.5,1,0.005,0.005,1);
+        textDisplay(g_msg1,5,5,21.5,1,0.005,0.005,1);
+        textDisplay(g_msg2,7,4,21.5,1,0.005,0.005,1);
+        textDisplay(g_msg3,3,3,21.5,1,0.005,0.005,1);
+
+}
 void display(void)
 {
 
@@ -1620,20 +1676,36 @@ void display(void)
 
 
     drawaxes();
+    if(init){
+        initial();
+    }
+
+    else{
+
+
+        horizon();
     sun_moon();
 
     //drawcube(redish[0],redish[1],redish[2],1,1,1);
 //    glutSolidCube(1.0);
 
+
     drawRoom();
     drawRoad();
-    piler();
+    setupTree();
     if(makeSound){
         carSound();
         makeSound = false;
     }
 
-    car();
+    glPushMatrix();
+    glTranslatef(5,0,0);
+    car(false);
+    glTranslatef(10,0,0);
+    car(false);
+    glTranslatef(15,0,0);
+    car(true,17);
+    glPopMatrix();
     //bomb();
     put_mine();
 
@@ -1659,7 +1731,7 @@ void display(void)
     if(game_over){
         fire(xTarget,yTarget,zTarget-8);
         string g_over = "Game Over!";
-        board(x_look-5,3,z_look+9);
+//        board(x_look-5,3,z_look+9);
         textDisplay(g_over,x_look-5,3,z_look+10);
         /*if(loose)
         {
@@ -1668,6 +1740,9 @@ void display(void)
         else{
             winSound();
         }*/
+    }
+
+
     }
 
 
@@ -1770,13 +1845,10 @@ void myKeyboardFunc( unsigned char key, int x, int y )
 //        light0();
         break;
 
-    //specular light handle
-    case 'S':
-        specular0 = true;
-//        light0();
-        break;
+    //start
     case 's':
-        specular0 = false;
+    case 'S':
+        init = false;
 //        light0();
         break;
     case '5':
