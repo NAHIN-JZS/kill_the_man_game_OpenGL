@@ -31,9 +31,9 @@ double wall_length = 20.0,wall_width = 0.5, wall_height = 10.0;
 double Loop, LoopAll = 0;
 GLfloat eyeX =wall_length/2;// 2;
 GLfloat eyeY =wall_height/2;// 3;
-GLfloat eyeZ = 1.5 * wall_length;
+GLfloat eyeZ = 1.5 * wall_length +10;
 
-GLfloat nearP = 4, farP = 250;
+GLfloat nearP = 8, farP = 350;//4,250
 
 GLfloat lookX = wall_length / 2;
 GLfloat lookY = wall_height/2;
@@ -1647,11 +1647,14 @@ string g_msg = "Khudiram Bose attempted to assassinate ";
 string g_msg1 = "Magistrate Douglas Kingsford";
 string g_msg2 = "But he failed";
 string g_msg3 = "Now, Its Your Turn To Kill The Tyrant Ruler";
+
+string g_msg4 = "Press G to Start";
 //        board(x_look-5,6,z_look+10);
         textDisplay(g_msg,3.5,6,21.5,1,0.005,0.005,1);
         textDisplay(g_msg1,5,5,21.5,1,0.005,0.005,1);
         textDisplay(g_msg2,7,4,21.5,1,0.005,0.005,1);
         textDisplay(g_msg3,3,3,21.5,1,0.005,0.005,1);
+        textDisplay(g_msg4,7,2,21.5,1,0.005,0.005,1);
 
 }
 void display(void)
@@ -1675,7 +1678,7 @@ void display(void)
     glViewport(0, 0, windowHeight, windowWidth);
 
 
-    drawaxes();
+
     if(init){
         initial();
     }
@@ -1683,6 +1686,7 @@ void display(void)
     else{
 
 
+    drawaxes();
         horizon();
     sun_moon();
 
@@ -1702,9 +1706,9 @@ void display(void)
     glTranslatef(5,0,0);
     car(false);
     glTranslatef(10,0,0);
-    car(false);
-    glTranslatef(15,0,0);
     car(true,17);
+    glTranslatef(15,0,0);
+    car(false);
     glPopMatrix();
     //bomb();
     put_mine();
@@ -1827,7 +1831,7 @@ void myKeyboardFunc( unsigned char key, int x, int y )
         FrustumChange(false);
         break;
     //ambient light handle
-    case 'A':
+    /*case 'A':
         ambient0 = true;
 //        light0();
         break;
@@ -1841,13 +1845,13 @@ void myKeyboardFunc( unsigned char key, int x, int y )
 //        light0();
         break;
     case 'd':
-        diffuse0 = false;
+        diffuse0 = false;*/
 //        light0();
         break;
 
     //start
-    case 's':
-    case 'S':
+    case 'g':
+    case 'G':
         init = false;
 //        light0();
         break;
@@ -1913,33 +1917,33 @@ void myKeyboardFunc( unsigned char key, int x, int y )
         break;*/
 
         // throw the missile
-        case '4':
+        case 'q':
 //            throwTheMissile();
             blust_mine();
             break;
 
         // to move the target
-        case 'g': // up
+        case 'w': // up
             if(canChangeTheTarget==false) break;
             zTarget--;
             break;
-        case 'b': // down
+        case 's': // down
             if(canChangeTheTarget==false) break;
             zTarget++;
             break;
-        case 'v': // left
+        case 'a': // left
             if(canChangeTheTarget==false) break;
             xTarget--;
             break;
-        case 'n': // right
+        case 'd': // right
             if(canChangeTheTarget==false) break;
             xTarget++;
             break;
-        case 'G': // up
+        case 'W': // up
             if(canChangeTheTarget==false) break;
             yTarget++;
             break;
-        case 'B': // down
+        case 'A': // down
             if(canChangeTheTarget==false) break;
             yTarget--;
             break;
