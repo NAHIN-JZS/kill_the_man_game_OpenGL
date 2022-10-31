@@ -69,47 +69,6 @@ float car_x =0.0f ,car_y=2.5,car_z=5.5;
 vector<int> v;
 unsigned int ID;
 
-//GLfloat alpha = 0.0, theta = 0.0, beta= 0.0, axis_x=0.0, axis_y=0.0, axis_z = 0.0, eyeX = 2.0, eyeY = 3.0, eyeZ = 10.0, roll = 0.0, pitch = 0.0, yaw = 0.0;
-
-/*static GLfloat v_quad_strip[8][3] =
-{
-    {0.0, 0.0, 0.0},
-    {0.0, 0.0, 1.0},
-    {1.0, 0.0, 1.0},
-    {1.0, 0.0, 0.0},
-    {0.0, 1.0, 0.0},
-    {0.0, 1.0, 1.0},
-    {1.0, 1.0, 1.0},
-    {1.0, 1.0, 0.0}
-
-    /*{0.0, 0.0, 0.0},
-    {0.0, 0.0, 2.0},
-    {2.0, 0.0, 2.0},
-    {2.0, 0.0, 0.0},
-    {1.0, 4.0, 1.0}*//*
-};
-
-static GLubyte qs_Indices[2][8] =
-{
-
-    /*{0, 1 ,2, 3},
-    {2, 3, 7, 6},
-    {4, 5, 6, 7},
-    {0, 3, 7, 4},
-    {1, 0, 4, 5},
-    {1, 2, 6, 5}
-
-
-    {4, 1, 2},
-    {4, 2, 3},
-    {4, 3, 0},
-    {4, 0, 1}*//*
-
-    {1,5,2,6,3,7,0,4},
-    {6,7,5,4,1,0,2,3}
-
-};*/
-
 
     static GLfloat v_cube[8][3] =
 {
@@ -185,6 +144,9 @@ void texture_image()
     v.push_back(ID);
 
     LoadTexture("F:\\4.2\\kill_the_man_game_OpenGL\\head_light_on.bmp");
+    v.push_back(ID);
+
+    LoadTexture("F:\\4.2\\kill_the_man_game_OpenGL\\fire.bmp");
     v.push_back(ID);
 
 }
@@ -404,6 +366,139 @@ void circle_3D(GLdouble radius)
 
 }
 
+/// fire start
+//GLfloat texture[10];
+
+const static int ParticleCount = 1000;
+
+typedef struct
+{
+double Xpos;
+double Ypos;
+double Zpos;
+double Xmov;
+double Zmov;
+double Red;
+double Green;
+double Blue;
+double Direction;
+double Acceleration;
+double Deceleration;
+double Scalez;
+bool Visible;
+}PARTICLES;
+
+PARTICLES Particle[ParticleCount];
+
+//GLuint LoadTextureRAW( const char * filename, int width,
+//int height);
+//void FreeTexture( GLuint texturez );
+
+void glCreateParticles (void) {
+int i;
+for (i = 1; i < ParticleCount; i++)
+{
+Particle[i].Xpos = 0;
+Particle[i].Ypos = -5;
+Particle[i].Zpos = -5;
+Particle[i].Xmov = (((((((2 - 1 + 1) * rand()%11) + 1) - 1 + 1) *
+rand()%11) + 1) * 0.005) - (((((((2 - 1 + 1) * rand()%11) + 1) - 1 + 1
+) * rand()%11) + 1) * 0.005);
+Particle[i].Zmov = (((((((2 - 1 + 1) * rand()%11) + 1) - 1 + 1) *
+rand()%11) + 1) * 0.005) - (((((((2 - 1 + 1) * rand()%11) + 1) - 1 + 1
+) * rand()%11) + 1) * 0.005);
+Particle[i].Red = 1;
+Particle[i].Green = 1;
+Particle[i].Blue = 1;
+Particle[i].Scalez = 0.25;
+Particle[i].Direction = 0;
+Particle[i].Acceleration = ((((((8 - 5 + 2) * rand()%11) + 5
+) - 1 + 1) * rand()%11) + 1) * 0.02;
+Particle[i].Deceleration = 0.0025;
+}
+}
+
+void glUpdateParticles (void) {
+int i;
+for (i = 1; i < ParticleCount; i++)
+{
+
+glColor3f (Particle[i].Red, Particle[i].Green,
+Particle[i].Blue);
+
+Particle[i].Ypos = Particle[i].Ypos + Particle[i]
+.Acceleration - Particle[i].Deceleration;
+Particle[i].Deceleration = Particle[i].Deceleration +
+0.0025;
+
+Particle[i].Xpos = Particle[i].Xpos + Particle[i].Xmov;
+Particle[i].Zpos = Particle[i].Zpos + Particle[i].Zmov;
+
+Particle[i].Direction = Particle[i].Direction + ((((((int
+)(0.5 - 0.1 + 0.1) * rand()%11) + 1) - 1 + 1) * rand()%11) + 1);
+
+if (Particle[i].Ypos < -5)
+{
+Particle[i].Xpos = 0;
+Particle[i].Ypos = -5;
+Particle[i].Zpos = -5;
+Particle[i].Red = 1;
+Particle[i].Green = 1;
+Particle[i].Blue = 1;
+Particle[i].Direction = 0;
+Particle[i].Acceleration = ((((((8 - 5 + 2) * rand()%11) + 5
+) - 1 + 1) * rand()%11) + 1) * 0.02;
+Particle[i].Deceleration = 0.0025;
+}
+
+}
+}
+
+void glDrawParticles (void) {
+int i;
+for (i = 1; i < ParticleCount; i++)
+{
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D,v[11]);
+glPushMatrix();
+
+    glTranslatef (Particle[i].Xpos, Particle[i].Ypos, Particle[i].Zpos);
+    glRotatef (Particle[i].Direction - 90, 0, 0, 1);
+
+    glScalef (Particle[i].Scalez, Particle[i].Scalez, Particle[i].Scalez);
+
+    glDisable (GL_DEPTH_TEST);
+
+
+//    drawcube(1,1,1,1,1,1);
+    circle_3D(1);
+//    drawcube(1,1,1,1,1,1);
+
+    glEnable(GL_DEPTH_TEST);
+
+glPopMatrix();
+glDisable(GL_TEXTURE_2D);
+
+}
+}
+
+
+void fire(float fire_x = 0.0,float fire_y = 0.0,float fire_z = 0.0){
+
+    glEnable(GL_DEPTH_TEST);
+    glPushMatrix();
+    glTranslatef (fire_x,fire_y,fire_z);
+    glUpdateParticles();
+    glDrawParticles();
+    glPopMatrix();
+
+}
+
+
+
+///Fire end
+
+
 void textDisplay(string str,int x,int y,int z)
 {
 
@@ -551,7 +646,7 @@ struct Point{
 
 GLfloat xTarget = 0, yTarget = 0, zTarget = 0;
 bool canChangeTheTarget = true;
-void target()
+void put_mine()
 {
     glPushMatrix();
         glScalef(1, 1, 1);
@@ -566,9 +661,9 @@ vector<Point>missile_v;
 int pos;
 bool shouldThrow;
 float bomb_effect = 20.0;
-float xMissile, yMissile, zMissile;
+//float xMissile, yMissile, zMissile;
 
-void bomb()
+/*void bomb()
 {
     glPushMatrix();
         missile_v.clear();
@@ -622,6 +717,7 @@ void bomb()
                             car_running = false;
                             game_over = true;
                             win = true;
+
                         }
                         else{
                             car_running = false;
@@ -643,54 +739,25 @@ void throwTheMissile()
 {
     shouldThrow = true;
     canChangeTheTarget = false;
-}
+}*/
 
-void missileLauncher()
-{
-    glPushMatrix();
+void blust_mine(){
+    if(abs(xTarget-car_x)<bomb_effect && abs(yTarget-car_y)<bomb_effect && abs(zTarget-car_z)<bomb_effect){
+                            car_running = false;
+                            game_over = true;
+                            win = true;
 
-    glPopMatrix();
-}
-
-
-void cylinder(float alas, float atas, float tinggi)
-{
-	float i;
-	glPushMatrix();
-	glTranslatef(1.0, 0.0, -alas / 8);
-	glutSolidCone(alas, 0, 32, 4);
-	for (i = 0; i <= tinggi; i += alas / 24)
-	{
-		glTranslatef(0.0, 0.0, alas / 24);
-		glutSolidTorus(alas / 4, alas - ((i * (alas - atas)) / tinggi), 16, 16);
-	}
-	glTranslatef(0.0, 0.0, alas / 4);
-	glutSolidCone(atas, 0, 20, 1);
-	glColor3f(1., 0., 0.);
-	glPopMatrix();
+                        }
+                        else{
+                            car_running = false;
+                            game_over = true;
+                            loose = true;
+                        }
 }
 
 
-void blok(float tebal, int ratiol, int ratiop)
-{
-	float i, j;
-	glPushMatrix();
-	for (i = 0; i < ratiop; i++)
-	{
-		glTranslatef(-(ratiol + 1) * tebal / 2, 0.0, 0.0);
-		for (j = 0; j < ratiol; j++)
-		{
-			glTranslatef(tebal, 0.0, 0.0);
-			glutSolidCube(tebal);
-//            length = tebal;
-//            drawcube(white[0],white[1],white[2],1,1,1);
-		}
 
-		glTranslatef(-(ratiol - 1) * tebal / 2, 0.0, tebal);
-	}
-	glPopMatrix();
-//	length = 1.0;
-}
+
 
 void spotlight(float x,float y, float z,float spt_cutoff)
 {
@@ -705,7 +772,7 @@ void spotlight(float x,float y, float z,float spt_cutoff)
     GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };
 //    GLfloat light_position[] = { 200, 9.5, -15 };  //0.7, 1.5, 9.0
 
-    GLfloat l_pos3[] = {x,y+10,z+10,1.0};
+    GLfloat l_pos3[] = {x,y,z,1.0};
     glEnable(GL_LIGHT2);
     glLightfv(GL_LIGHT2,GL_AMBIENT,light_ambient);
     glLightfv(GL_LIGHT2,GL_DIFFUSE,light_diffuse);
@@ -867,7 +934,6 @@ void car_body(void)
     glDisable(GL_TEXTURE_2D);
     glPopMatrix();
 
-    spotlight(1.0+x_look,-1.25,1.9+z_look,30);
     ///head light3
     if(l_on3){
         glBindTexture(GL_TEXTURE_2D,v[10]);
@@ -985,6 +1051,10 @@ void car()
 //        glTranslatef(0, 0, -150);
         glTranslatef(car_x, car_y, car_z);
         glRotatef(90, 0, -1, 0);
+        glPushMatrix();
+//        glTranslatef(-1+x_look,-1.25,1.9+z_look);
+        spotlight(x_look,-1.25,1.9+z_look,20);
+        glPopMatrix();
         glScalef(1.0,1.0,1.0);
 
         if (car_running){
@@ -1211,6 +1281,7 @@ void drawRoom()
 
 
 
+
 void drawSphere(float am_r, float am_g, float am_b, float df_r, float df_g, float df_b )
 {
     GLfloat no_mat[] = { 0.0, 0.0, 0.0, 1.0 };
@@ -1236,6 +1307,18 @@ void drawSphere(float am_r, float am_g, float am_b, float df_r, float df_g, floa
 //    glPopMatrix();
 
 }
+
+
+/*void init (void) {
+//    glEnable( GL_TEXTURE_2D );
+//    glEnable(GL_DEPTH_TEST);
+
+    glCreateParticles();
+
+//    texture[0] = LoadTextureRAW( "F://4.2//academic//Graphics//fire//particle_mask.raw",256,256); //load our texture
+//    texture[1] = LoadTextureRAW( "F://4.2//academic//Graphics//fire//particle.raw",256,256);
+//load our texture
+}*/
 
 void display(void)
 {
@@ -1266,9 +1349,16 @@ void display(void)
     drawRoad();
     piler();
     car();
-    bomb();
-    target();
+    //bomb();
+    put_mine();
+//    fire(car_x,car_y,car_z);
+
+//    init();
+
+
+
     if(win){
+        fire(car_x-13,car_y,car_z+10);
         string g_msg = "You Win!!!!";
         textDisplay(g_msg,x_look-5,6,z_look+10);
     }
@@ -1282,16 +1372,6 @@ void display(void)
     }
 
 
-
-//    glPushMatrix();
-//    glTranslatef(100,3.5,-10);
-//    glScalef(.5,.5,.5);
-//    //glRotatef( alpha,axis_x, axis_y, 0.0 );
-//    glRotatef( theta, axis_x, axis_y, 0.0 );
-//    fan();
-//    glPopMatrix();
-
-//    glPopMatrix();
 
     glFlush();
     glutSwapBuffers();
@@ -1452,7 +1532,8 @@ void myKeyboardFunc( unsigned char key, int x, int y )
 
         // throw the missile
         case '4':
-            throwTheMissile();
+//            throwTheMissile();
+            blust_mine();
             break;
 
         // to move the target
@@ -1510,6 +1591,8 @@ void animate()
 }
 
 
+
+
 int main (int argc, char **argv)
 {
     glutInit(&argc, argv);
@@ -1527,11 +1610,15 @@ int main (int argc, char **argv)
     glEnable(GL_LIGHTING);
     light0();
 //    light1();
+//    init();
+    glCreateParticles();
 
+//    glutReshapeFunc (reshape);
     glutKeyboardFunc(myKeyboardFunc);
     glutDisplayFunc(display);
-    glutIdleFunc(animate);
+    glutIdleFunc(display);
     glutMainLoop();
 
     return 0;
 }
+
