@@ -7,6 +7,9 @@
 #include <windows.h>
 #include <math.h>
 #include "BmpLoader.h"
+#include<iostream>
+#include<Windows.h>
+#include<MMSystem.h>
 
 #define PI 3.1416
 
@@ -17,7 +20,8 @@ double windowHeight=1000, windowWidth=1000;
 //GLfloat alpha = 0.0, theta = 0.0, axis_x=0.0, axis_y=0.0, lpan = 0.0, rpan = 0.0, fdist=0.0,yaw = 0.0, dx = 0.0,dy = 0.0,dz = 0.0,roll=0.0,pitch = 0.0,cdist = 0.0,xaxis = 0.0, yaxis=1.0,zaxis=0.0;
 GLfloat alpha = 0.0, theta = 0.0,bita = 0.0, axis_x=0.0, axis_y=0.0;
 
-GLfloat up_x = 0,up_y = 1,up_z = 0;
+GLfloat up_x = 0,up_y = 1,up_z = 0,dx,dy,dz;
+int theta_x=0, theta_y=0, theta_z=0;
 
 GLboolean bRotate = false, uRotate = false;
 
@@ -35,6 +39,7 @@ GLfloat lookX = wall_length / 2;
 GLfloat lookY = wall_height/2;
 GLfloat lookZ = wall_length/2;
 
+
 GLfloat x_look = lookX;
 GLfloat y_look = lookY;
 GLfloat z_look = lookZ;
@@ -47,11 +52,18 @@ bool specflag=true;
 bool game_over = false;
 bool win = false;
 bool loose = false;
+bool day = false;
+bool makeSound = true;
+bool bomb_sound = false;
 
 bool ambient0 = true, diffuse0 = true, specular0 = true;
 bool ambient1 = true, diffuse1 = true, specular1 = true;
 
 float length = 1.0;
+
+double const pi = acos(-1), d=0.05;
+double const sn = sin(pi/180), cs=cos(pi/180);
+GLfloat sx, cx;
 
 float redish[] = {0.5020, 0.0000, 0.0000};
 float deep_ash[] = {0.4392, 0.5020, 0.5647};
@@ -64,7 +76,7 @@ float brown[] = {0.5451, 0.2706, 0.0745};
 float black[] = {0.0, 0.0, 0.0};
 
 bool car_running = true;
-float car_x =0.0f ,car_y=2.5,car_z=5.5;
+float car_x =-30.0f ,car_y=2.5,car_z=5.5;
 
 vector<int> v;
 unsigned int ID;
@@ -155,16 +167,50 @@ void texture_image()
     LoadTexture("F:\\4.2\\kill_the_man_game_OpenGL\\soil.bmp");
     v.push_back(ID);
 
+    LoadTexture("F:\\4.2\\kill_the_man_game_OpenGL\\moon.bmp");
+    v.push_back(ID);
+
 }
 
 
-void light0()
+void bombBlustSound()
+        {
+            PlaySound(NULL, 0, 0);
+            PlaySound(TEXT("F://4.2//kill_the_man_game_OpenGL//bomb.wav"), NULL, SND_ASYNC | SND_FILENAME);
+            std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+            PlaySound(NULL, 0, 0);
+        }
+void carSound()
+{
+    PlaySound(NULL, 0, 0);
+    if(makeSound) PlaySound(TEXT("F://4.2//kill_the_man_game_OpenGL//car_passing.wav"), NULL, SND_ASYNC | SND_FILENAME);
+    else PlaySound(NULL,0,0);
+}
+
+void looseSound()
+{
+    PlaySound(NULL, 0, 0);
+    PlaySound(TEXT("F://4.2//kill_the_man_game_OpenGL//loose.wav"), NULL, SND_ASYNC | SND_FILENAME);
+    std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+    PlaySound(NULL, 0, 0);
+}
+
+void winSound()
+{
+    PlaySound(NULL, 0, 0);
+    PlaySound(TEXT("F://4.2//kill_the_man_game_OpenGL//win.wav"), NULL, SND_ASYNC | SND_FILENAME);
+    std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+    PlaySound(NULL, 0, 0);
+}
+
+
+void light0(float x,float y,float z)
 {
     GLfloat no_light[] = { 0.0, 0.0, 0.0, 1.0 };
-    GLfloat light_ambient[]  = {0.3, 0.3, 0.3, 1.0};
+    GLfloat light_ambient[]  = {1.0, 1.0, 1.0, 1.0};
     GLfloat light_diffuse[]  = { 1.0, 1.0, 1.0, 1.0 };
     GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };
-    GLfloat light_position[] = { 0.0, 100.0, 0.0, 1.0 };
+    GLfloat light_position[] = { x, y, z, 1.0 };
 
     glEnable( GL_LIGHT0);
     if (ambient0)
@@ -505,6 +551,9 @@ void fire(float fire_x = 0.0,float fire_y = 0.0,float fire_z = 0.0){
 ///Fire end
 
 
+
+
+
 void textDisplay(string str,int x,int y,int z)
 {
 
@@ -532,6 +581,83 @@ void textDisplay(string str,int x,int y,int z)
 }
 
 
+
+void tric(double deg)
+{
+    deg = deg * pi / 180;
+    sx=sin(deg);
+    cx=cos(deg);
+}
+
+
+void wcsAlign()
+{
+    lookX=lookX-eyeX;
+    lookY=lookY-eyeY;
+    lookZ=lookZ-eyeZ;
+
+    tric(-theta_x);//X axix
+    dy = lookY*cx-lookZ*sx;
+    dz = lookY*sx+lookZ*cx;
+
+    lookY=dy;
+    lookZ=dz;
+
+    tric(-theta_y);//Y axix
+    dx = lookX*cx+lookZ*sx;
+    dz = -lookX*sx+lookZ*cx;
+
+    lookX = dx;
+    lookZ = dz;
+
+    tric(-theta_z);//Z axix
+
+    dx = lookX*cx-lookY*sx;
+    dy = lookX*sx+lookY*cx;
+
+    lookX = dx;
+    lookY = dy;
+
+//    cout << "WCS:" << endl;
+//    cout << lookX << " " << lookY << " " << lookZ << endl;
+}
+
+void retransform()
+{
+    tric(theta_z);//Z axix
+
+    dx = lookX*cx-lookY*sx;
+    dy = lookX*sx+lookY*cx;
+
+    lookX = dx;
+    lookY = dy;
+
+    tric(theta_y);//Y axix
+    dx = lookX*cx+lookZ*sx;
+    dz = -lookX*sx+lookZ*cx;
+
+    lookX = dx;
+    lookZ = dz;
+
+    tric(theta_x);//X axix
+    dy = lookY*cx-lookZ*sx;
+    dz = lookY*sx+lookZ*cx;
+
+    lookY=dy;
+    lookZ=dz;
+
+
+//    cout << "VCS:" << endl;
+//    cout << lookX << " " << lookY << " " << lookZ << endl;
+
+    lookX=lookX+eyeX;
+    lookY=lookY+eyeY;
+    lookZ=lookZ+eyeZ;
+
+}
+
+
+
 void FrustumChange(bool positive = true)
 {
     if(positive)nearP++;
@@ -541,20 +667,31 @@ void FrustumChange(bool positive = true)
 void Pitch(bool clock = true)
 {
     // Translate to origin
-    if(clock)bita++;
-    else bita--;
-    GLfloat dx = 0 ;
-    GLfloat dy = 0;
-    GLfloat dz = -eyeZ;
+//    if(clock)bita++;
+//    else bita--;
+//    GLfloat dx = 0 ;
+//    GLfloat dy = 0;
+//    GLfloat dz = -eyeZ;
+//
+//    GLfloat new_x = dx;
+//    GLfloat new_y = dy*cos(bita*PI/180.0)-dz*sin(bita*PI/180.0);
+//    GLfloat new_z = dy*sin(bita*PI/180.0) +dz*cos(bita*PI/180.0);
+//
+//    lookX = new_x;
+//    lookY = new_y;
+//    lookZ = new_z-dz;
 
-    GLfloat new_x = dx;
-    GLfloat new_y = dy*cos(bita*PI/180.0)-dz*sin(bita*PI/180.0);
-    GLfloat new_z = dy*sin(bita*PI/180.0) +dz*cos(bita*PI/180.0);
 
-    lookX = new_x;
-    lookY = new_y;
-    lookZ = new_z-dz;
-
+    if(clock){
+        wcsAlign();
+        theta_x += 1;
+        retransform();
+    }
+    else{
+        wcsAlign();
+        theta_x -= 1;
+        retransform();
+    }
 
 }
 
@@ -562,27 +699,59 @@ void Pitch(bool clock = true)
 
 void Roll(bool clock = true)
 {
-    if(clock)alpha++;
-    else alpha--;
-    up_x = -sin(PI*alpha/180.0);
-    up_y = cos(PI*alpha/180);
+//    if(clock)alpha++;
+//    else alpha--;
+//    up_x = -sin(PI*alpha/180.0);
+//    up_y = cos(PI*alpha/180);
+
+
+    if(clock){
+        dx = up_x*cs+up_y*sn;
+            dy = -up_x*sn+up_y*cs;
+
+            up_x=dx;
+            up_y=dy;
+
+            theta_z -= 1;
+    }
+    else{
+        dx = up_x*cs-up_y*sn;
+            dy = up_x*sn+up_y*cs;
+
+            up_x=dx;
+            up_y=dy;
+
+            theta_z += 1;
+    }
 }
 
 void Yaw(bool clock = true)
 {
-    if(clock) theta++;
-    else theta--;
-    GLfloat dx =0;
-    GLfloat dy = 0;
-    GLfloat dz = -eyeZ;
+//    if(clock) theta++;
+//    else theta--;
+//    GLfloat dx =0;
+//    GLfloat dy = 0;
+//    GLfloat dz = -eyeZ;
+//
+//    GLfloat new_x = dx*cos(theta*PI/180.0)+dz*sin(theta*PI/180.0);
+//    GLfloat new_y = dy;
+//    GLfloat new_z = -dx*sin(theta*PI/180.0) +dz*cos(theta*PI/180.0);
+//
+//    lookX = new_x;
+//    lookY = new_y;
+//    lookZ = -dz+new_z;
 
-    GLfloat new_x = dx*cos(theta*PI/180.0)+dz*sin(theta*PI/180.0);
-    GLfloat new_y = dy;
-    GLfloat new_z = -dx*sin(theta*PI/180.0) +dz*cos(theta*PI/180.0);
+    if(clock){
+        wcsAlign();
+        theta_y += 1;
+        retransform();
+    }
+    else{
 
-    lookX = new_x;
-    lookY = new_y;
-    lookZ = -dz+new_z;
+        wcsAlign();
+            theta_y -= 1;
+            retransform();
+    }
 }
 
 
@@ -672,7 +841,7 @@ vector<Point>missile_v;
 
 int pos;
 bool shouldThrow;
-float bomb_effect = 20.0;
+float bomb_effect = 10.0;
 //float xMissile, yMissile, zMissile;
 
 /*void bomb()
@@ -754,16 +923,25 @@ void throwTheMissile()
 }*/
 
 void blust_mine(){
+    if(!bomb_sound){
+        bombBlustSound();
+        bomb_sound = true;
+    }
     if(abs(xTarget-car_x)<bomb_effect && abs(yTarget-car_y)<bomb_effect && abs(zTarget-car_z)<bomb_effect){
+
                             car_running = false;
                             game_over = true;
                             win = true;
+                            loose = false;
+
 
                         }
     else{
+
         car_running = false;
         game_over = true;
         loose = true;
+        win = false;
     }
 }
 
@@ -909,6 +1087,7 @@ void Tire()
 void car_body(void)
 {
     //glRotatef(rot,0,1,0);
+
     ///CAR nicher body
     if(win){
             glBindTexture(GL_TEXTURE_2D,v[12]);
@@ -1149,6 +1328,14 @@ void jhop(double pos_x=6.0,double pos_y=0.0,double pos_z =0.0)
     circle_3D(1.0);
     glDisable(GL_TEXTURE_2D);
     glPopMatrix();
+
+    /*glPushMatrix();
+    glTranslatef(pos_x+0.8,pos_y+4.3,pos_z+0.2);
+    glBindTexture(GL_TEXTURE_2D,2);
+    glEnable(GL_TEXTURE_2D);
+    circle_3D(1.0);
+    glDisable(GL_TEXTURE_2D);
+    glPopMatrix();*/
 }
 
 void Tree(double pos_x=0.4,double pos_y=0.3,double pos_z =10)
@@ -1327,7 +1514,50 @@ void drawRoom()
 
 }
 
+void board(float x, float y,float z)
+{
+    //floor
+//    glEnable(GL_TEXTURE_2D);
+//    glBindTexture(GL_TEXTURE_2D,v[2]);
+    glPushMatrix();
+    glTranslatef(x,y,z);
+    glScalef(20,20,0);
 
+    drawcube(brown[0],brown[1],brown[2],1,1,1);
+    glPopMatrix();
+//    glDisable(GL_TEXTURE_2D);
+
+}
+
+
+void sun_moon(){
+
+    if(day){
+
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D,v[11]);
+    glPushMatrix();
+    light0(30,30,0);
+    glTranslatef(30,30,0);
+//    glScalef(200,0,30);
+    circle_3D(2);
+    glPopMatrix();
+    glDisable(GL_TEXTURE_2D);
+    }
+
+    else{
+
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D,v[13]);
+    glPushMatrix();
+    light0(30,30,0);
+    glTranslatef(30,30,0);
+//    glScalef(200,0,30);
+    circle_3D(2);
+    glPopMatrix();
+    glDisable(GL_TEXTURE_2D);
+    }
+}
 
 
 void drawSphere(float am_r, float am_g, float am_b, float df_r, float df_g, float df_b )
@@ -1390,15 +1620,24 @@ void display(void)
 
 
     drawaxes();
+    sun_moon();
 
     //drawcube(redish[0],redish[1],redish[2],1,1,1);
 //    glutSolidCube(1.0);
+
     drawRoom();
     drawRoad();
     piler();
+    if(makeSound){
+        carSound();
+        makeSound = false;
+    }
+
     car();
     //bomb();
     put_mine();
+
+
 //    fire(car_x,car_y,car_z);
 
 //    init();
@@ -1406,17 +1645,29 @@ void display(void)
 
 
     if(win){
-        fire(xTarget,yTarget,zTarget-8);
+
         string g_msg = "You Win!!!!";
+//        board(x_look-5,6,z_look+9);
         textDisplay(g_msg,x_look-5,6,z_look+10);
     }
     else if(loose){
         string g_msg = "You Loose!!!!";
+//        board(x_look-5,6,z_look+10);
         textDisplay(g_msg,x_look-5,6,z_look+10);
+
     }
     if(game_over){
+        fire(xTarget,yTarget,zTarget-8);
         string g_over = "Game Over!";
+        board(x_look-5,3,z_look+9);
         textDisplay(g_over,x_look-5,3,z_look+10);
+        /*if(loose)
+        {
+            looseSound();
+        }
+        else{
+            winSound();
+        }*/
     }
 
 
@@ -1503,32 +1754,43 @@ void myKeyboardFunc( unsigned char key, int x, int y )
     //ambient light handle
     case 'A':
         ambient0 = true;
-        light0();
+//        light0();
         break;
     case 'a':
         ambient0 = false;
-        light0();
+//        light0();
         break;
     //diffuse light handle
     case 'D':
         diffuse0 = true;
-        light0();
+//        light0();
         break;
     case 'd':
         diffuse0 = false;
-        light0();
+//        light0();
         break;
 
     //specular light handle
     case 'S':
         specular0 = true;
-        light0();
+//        light0();
         break;
     case 's':
         specular0 = false;
-        light0();
+//        light0();
         break;
-
+    case '5':
+        day = false;
+        ambient0 = false;
+        diffuse0 = true;
+        specular0 = false;
+        break;
+    case '6':
+        day = true;
+        ambient0 = true;
+        diffuse0 = true;
+        specular0 = true;
+        break;
 
     //ambient light handle
     /*case 'Q':
@@ -1652,11 +1914,29 @@ int main (int argc, char **argv)
 
     texture_image();
 
+
+    /*int total_tree = 50;
+    int tree_position [50][3];
+    for(int i = 0; i<50;i++){
+        int xx,yy,zz;
+        xx = rand()%150;
+        yy = rand()%150;
+        zz = rand()%150;
+        if(i%2 ==0){
+            xx = -xx;
+            yy = -yy;
+            zz = -zz;
+        }
+        tree_position[i][0] = xx;
+        tree_position[i][1] = yy;
+        tree_position[i][2] = zz;
+    }*/
+
     glShadeModel( GL_SMOOTH );
     glEnable( GL_DEPTH_TEST );
     glEnable(GL_NORMALIZE);
     glEnable(GL_LIGHTING);
-    light0();
+//    light0();
 //    light1();
 //    init();
     glCreateParticles();
