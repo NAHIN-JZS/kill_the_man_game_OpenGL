@@ -149,6 +149,12 @@ void texture_image()
     LoadTexture("F:\\4.2\\kill_the_man_game_OpenGL\\fire.bmp");
     v.push_back(ID);
 
+    LoadTexture("F:\\4.2\\kill_the_man_game_OpenGL\\car_fire.bmp");
+    v.push_back(ID);
+
+    LoadTexture("F:\\4.2\\kill_the_man_game_OpenGL\\soil.bmp");
+    v.push_back(ID);
+
 }
 
 
@@ -459,7 +465,7 @@ int i;
 for (i = 1; i < ParticleCount; i++)
 {
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D,v[11]);
+    glBindTexture(GL_TEXTURE_2D,v[12]);
 glPushMatrix();
 
     glTranslatef (Particle[i].Xpos, Particle[i].Ypos, Particle[i].Zpos);
@@ -648,12 +654,18 @@ GLfloat xTarget = 0, yTarget = 0, zTarget = 0;
 bool canChangeTheTarget = true;
 void put_mine()
 {
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D,v[13]);
+
     glPushMatrix();
-        glScalef(1, 1, 1);
+        glScalef(1, 0.1, 1);
         glTranslatef(xTarget, yTarget, zTarget);
-        glColor3f(green[0], green[1], green[2]);
-        drawcube(green[0], green[1], green[2], 1, 1, 1);
+//        glColor3f(green[0], green[1], green[2]);
+        circle_3D(1);
+//        drawcube(green[0], green[1], green[2], 1, 1, 1);
     glPopMatrix();
+
+    glDisable(GL_TEXTURE_2D);
 }
 
 vector<Point>missile_v;
@@ -748,11 +760,11 @@ void blust_mine(){
                             win = true;
 
                         }
-                        else{
-                            car_running = false;
-                            game_over = true;
-                            loose = true;
-                        }
+    else{
+        car_running = false;
+        game_over = true;
+        loose = true;
+    }
 }
 
 
@@ -898,7 +910,13 @@ void car_body(void)
 {
     //glRotatef(rot,0,1,0);
     ///CAR nicher body
-    glBindTexture(GL_TEXTURE_2D,v[6]);
+    if(win){
+            glBindTexture(GL_TEXTURE_2D,v[12]);
+    }
+    else{
+        glBindTexture(GL_TEXTURE_2D,v[6]);
+    }
+
     glEnable(GL_TEXTURE_2D);
     glPushMatrix();
     glTranslatef(-0.1-1+x_look,-2,-2+z_look);
@@ -914,7 +932,13 @@ void car_body(void)
 
 
     ///Red light1
-    glBindTexture(GL_TEXTURE_2D,v[7]);
+    if(win){
+            glBindTexture(GL_TEXTURE_2D,v[12]);
+    }
+    else{
+        glBindTexture(GL_TEXTURE_2D,v[7]);
+    }
+
     glEnable(GL_TEXTURE_2D);
     glPushMatrix();
     glTranslatef(-1+x_look,-1.25,-1.9+z_look);
@@ -925,7 +949,13 @@ void car_body(void)
     glPopMatrix();
 
     ///red light 2
-    glBindTexture(GL_TEXTURE_2D,v[7]);
+    if(win){
+            glBindTexture(GL_TEXTURE_2D,v[12]);
+    }
+    else{
+        glBindTexture(GL_TEXTURE_2D,v[7]);
+    }
+
     glEnable(GL_TEXTURE_2D);
     glPushMatrix();
     glTranslatef(0.6+x_look,-1.25,-1.9+z_look);
@@ -970,7 +1000,13 @@ void car_body(void)
 
 
     ///numberplate
-    glBindTexture(GL_TEXTURE_2D,v[8]);
+    if(win){
+            glBindTexture(GL_TEXTURE_2D,v[12]);
+    }
+    else{
+        glBindTexture(GL_TEXTURE_2D,v[8]);
+    }
+
     glEnable(GL_TEXTURE_2D);
     glPushMatrix();
     glTranslatef(-.3+x_look,-1.6,-1.9+z_look);
@@ -988,7 +1024,13 @@ void car_body(void)
     glPopMatrix();*/
 
     ///CAR TOP
-    glBindTexture(GL_TEXTURE_2D,v[6]);
+    if(win){
+            glBindTexture(GL_TEXTURE_2D,v[12]);
+    }
+    else{
+        glBindTexture(GL_TEXTURE_2D,v[6]);
+    }
+
     glEnable(GL_TEXTURE_2D);
     glPushMatrix();
     glTranslatef(-1+.05+x_look,-1,-1.1+z_look);
@@ -999,7 +1041,13 @@ void car_body(void)
 
 
     ///back glass
-    glBindTexture(GL_TEXTURE_2D,v[4]);
+    if(win){
+            glBindTexture(GL_TEXTURE_2D,v[12]);
+    }
+    else{
+        glBindTexture(GL_TEXTURE_2D,v[4]);
+    }
+
     glEnable(GL_TEXTURE_2D);
     glPushMatrix();
     glTranslated(-1+.15+.05+x_look,-1+.07,-1.1+z_look);
@@ -1358,7 +1406,7 @@ void display(void)
 
 
     if(win){
-        fire(car_x-13,car_y,car_z+10);
+        fire(xTarget,yTarget,zTarget-8);
         string g_msg = "You Win!!!!";
         textDisplay(g_msg,x_look-5,6,z_look+10);
     }
