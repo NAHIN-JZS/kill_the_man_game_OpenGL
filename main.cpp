@@ -76,8 +76,8 @@ float brown[] = {0.5451, 0.2706, 0.0745};
 float black[] = {0.0, 0.0, 0.0};
 
 bool car_running = true;
-float car_x =-30.0f ,car_y=2.5,car_z=5.5;
-float meg_car_x =-35.0f ,meg_car_y=2.5,meg_car_z=5.5;
+float car_x =-170.0f ,car_y=2.5,car_z=5.5;
+float meg_car_x =-172.0f ,meg_car_y=2.5,meg_car_z=5.5;
 
 vector<int> v;
 unsigned int ID;
@@ -1301,10 +1301,10 @@ void car(bool meg ,int texture_id=6)
 
         if (car_running){
             car_x += 0.1f;
-            meg_car_x += 0.113f;
+            meg_car_x += 0.1f;
         if(car_x>100){
-            car_x=-20.0f;
-            meg_car_x = -20.0f;
+            car_x=-170.0f;
+            meg_car_x = -172.0f;
         }
         }
 
@@ -1646,15 +1646,17 @@ light0(50,50,50);
 string g_msg = "Khudiram Bose attempted to assassinate ";
 string g_msg1 = "Magistrate Douglas Kingsford";
 string g_msg2 = "But he failed";
-string g_msg3 = "Now, Its Your Turn To Kill The Tyrant Ruler";
+string g_msg3 = "Our source informed us that he is in a Green Car";
+string g_msg4 = "Now, Its Your Turn To Kill The Tyrant Ruler";
 
-string g_msg4 = "Press G to Start";
+string g_msg5 = "Press G to Start";
 //        board(x_look-5,6,z_look+10);
         textDisplay(g_msg,3.5,6,21.5,1,0.005,0.005,1);
         textDisplay(g_msg1,5,5,21.5,1,0.005,0.005,1);
         textDisplay(g_msg2,7,4,21.5,1,0.005,0.005,1);
-        textDisplay(g_msg3,3,3,21.5,1,0.005,0.005,1);
-        textDisplay(g_msg4,7,2,21.5,1,0.005,0.005,1);
+        textDisplay(g_msg3,2,3,21.5,1,0.005,0.005,1);
+        textDisplay(g_msg4,3,2,21.5,1,0.005,0.005,1);
+        textDisplay(g_msg5,7,1,21.5,1,0.005,0.005,1);
 
 }
 void display(void)
@@ -1697,7 +1699,8 @@ void display(void)
     drawRoom();
     drawRoad();
     setupTree();
-    if(makeSound){
+    if(makeSound && car_x > -75.0){
+
         carSound();
         makeSound = false;
     }
@@ -1724,19 +1727,19 @@ void display(void)
 
         string g_msg = "You Win!!!!";
 //        board(x_look-5,6,z_look+9);
-        textDisplay(g_msg,x_look-5,6,z_look+10);
+        textDisplay(g_msg,x_look-5,6,z_look+10,1,0.005,0.005,2);
     }
     else if(loose){
-        string g_msg = "You Loose!!!!";
+        string g_msg = "You Lose!!!!";
 //        board(x_look-5,6,z_look+10);
-        textDisplay(g_msg,x_look-5,6,z_look+10);
+        textDisplay(g_msg,x_look-5,6,z_look+10,1,0.005,0.005,2);
 
     }
     if(game_over){
         fire(xTarget,yTarget,zTarget-8);
         string g_over = "Game Over!";
 //        board(x_look-5,3,z_look+9);
-        textDisplay(g_over,x_look-5,3,z_look+10);
+        textDisplay(g_over,x_look-5,3,z_look+10,1,0.005,0.005,2);
         /*if(loose)
         {
             looseSound();
@@ -1977,6 +1980,34 @@ void animate()
 }
 
 
+void printMenue()
+{
+    cout << "Basic Movement:" << endl;
+    cout << "\t + : Move Forward" << endl;
+    cout << "\t - : Move Backword" << endl;
+    cout << "\t z : Move Left by X " << endl;
+    cout << "\t x : Move Right by X" << endl;
+    cout << "\t * : Move Up by Z" << endl;
+    cout << "\t / : Move Up by Z" << endl;
+    cout << "\t p : Pitch Up" << endl;
+    cout << "\t P : Pitch Down" << endl;
+    cout << "\t y : Yaw Left" << endl;
+    cout << "\t Y : Yaw Right" << endl;
+    cout << "\t r : Roll Right" << endl;
+    cout << "\t R : Roll Left" << endl;
+
+    cout << "\nDay Night Operation:" << endl;
+    cout << "\t 5 : Night" << endl;
+    cout << "\t 6 : Day" << endl;
+
+    cout << "\nOperation:" << endl;
+    cout << "\w a s d: Mine Movement and Setup" << endl;
+    cout << "\t q : Blast Mine" << endl;
+
+    cout << "\nOthers:" << endl;
+    cout << "\t H : Car Headlight On/Off" << endl;
+    cout << "\t G : Start Game" << endl;
+}
 
 
 int main (int argc, char **argv)
@@ -2016,6 +2047,7 @@ int main (int argc, char **argv)
 //    light1();
 //    init();
     glCreateParticles();
+    printMenue();
 
 //    glutReshapeFunc (reshape);
     glutKeyboardFunc(myKeyboardFunc);
